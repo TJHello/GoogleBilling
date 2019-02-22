@@ -27,6 +27,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //内购
-    api 'com.android.billingclient:billing:1.0'
+    api 'com.android.billingclient:billing:1.2'
     api "com.google.android.gms:play-services-location:16.0.0"
 }

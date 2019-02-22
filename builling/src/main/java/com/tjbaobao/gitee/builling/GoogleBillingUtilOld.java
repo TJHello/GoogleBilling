@@ -66,8 +66,8 @@ public class GoogleBillingUtilOld {
 
     private static final String TAG = "GoogleBillingUtilOld";
     private static final boolean IS_DEBUG = false;
-    private String[] inAppSKUS = new String[]{};//内购ID,必填
-    private String[] subsSKUS = new String[]{"ocr_lite_month"};//订阅ID,必填
+    private static String[] inAppSKUS = new String[]{};//内购ID
+    private static String[] subsSKUS = new String[]{};//订阅ID
 
     public static final String BILLING_TYPE_INAPP = BillingClient.SkuType.INAPP;//内购
     public static final String BILLING_TYPE_SUBS = BillingClient.SkuType.SUBS;//订阅
@@ -86,6 +86,20 @@ public class GoogleBillingUtilOld {
     private GoogleBillingUtilOld()
     {
 
+    }
+
+    /**
+     * 设置skus
+     * @param inAppSKUS 内购id
+     * @param subsSKUS 订阅id
+     */
+    public static void setSkus(@Nullable String[] inAppSKUS,@Nullable String[] subsSKUS){
+        if(inAppSKUS!=null){
+            GoogleBillingUtilOld.inAppSKUS = inAppSKUS;
+        }
+        if(subsSKUS!=null){
+            GoogleBillingUtilOld.subsSKUS = subsSKUS;
+        }
     }
 
     public static GoogleBillingUtilOld getInstance()

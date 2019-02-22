@@ -25,8 +25,8 @@ public class GoogleBillingUtil {
 
     private static final String TAG = "GoogleBillingUtil";
     private static final boolean IS_DEBUG = false;
-    private String[] inAppSKUS = new String[]{"","",""};//内购ID,必填
-    private String[] subsSKUS = new String[]{"","",""};//订阅ID,必填
+    private static String[] inAppSKUS = new String[]{};//内购ID,必填，注意！如果用不着的请去掉多余的""
+    private static String[] subsSKUS = new String[]{};//订阅ID,必填，注意！如果用不着的请去掉多余的""
 
     public static final String BILLING_TYPE_INAPP = BillingClient.SkuType.INAPP;//内购
     public static final String BILLING_TYPE_SUBS = BillingClient.SkuType.SUBS;//订阅
@@ -48,11 +48,30 @@ public class GoogleBillingUtil {
 
     }
 
+    /**
+     * 设置skus
+     * @param inAppSKUS 内购id
+     * @param subsSKUS 订阅id
+     */
+    public static void setSkus(@Nullable String[] inAppSKUS,@Nullable String[] subsSKUS){
+        if(inAppSKUS!=null){
+            GoogleBillingUtil.inAppSKUS = inAppSKUS;
+        }
+        if(subsSKUS!=null){
+            GoogleBillingUtil.subsSKUS = subsSKUS;
+        }
+    }
+
     public static GoogleBillingUtil getInstance()
     {
         return mGoogleBillingUtil;
     }
 
+    /**
+     * 开始建立内购连接
+     * @param context applicationContext
+     * @return
+     */
     public GoogleBillingUtil build(Context context)
     {
         if(mBillingClient==null)
@@ -726,6 +745,13 @@ public class GoogleBillingUtil {
         mOnQueryFinishedListenerList.clear();
         mOnStartSetupFinishedListenerList.clear();
         mOnConsumeResponseListenerList.clear();
+
+    }
+
+    /**
+     * 清除内购监听器，防止内存泄漏
+     */
+    public static void onDestroy(){
         if(builder!=null)
         {
             builder.setListener(null);

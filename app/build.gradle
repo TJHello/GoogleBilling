@@ -11,7 +11,7 @@ android {
         applicationId "com.bestai.scannerlite"//原包名 com.tjbaobao.gitee.googlebuillingutil
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 190116
+        versionCode 203
         versionName "2.0.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
