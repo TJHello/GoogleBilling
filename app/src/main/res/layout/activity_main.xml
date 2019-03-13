@@ -6,11 +6,29 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
-
-    <TextView
+    <RelativeLayout
+            android:id="@+id/rlLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="#0096ff"
+            >
+        <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GoogleBillingUtil"
+                android:textSize="16sp"
+                android:textColor="#ffffff"
+                android:padding="16dp"
+                android:layout_centerInParent="true"
+                />
+    </RelativeLayout>
+    <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btNext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello World!"
+            android:text="下一个页面"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

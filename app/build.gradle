@@ -8,11 +8,11 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.bestai.scannerlite"//原包名 com.tjbaobao.gitee.googlebuillingutil
+        applicationId "com.love.poly.puzzle.game"//原包名 com.tjbaobao.gitee.googlebuillingutil
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 203
-        versionName "2.0.3"
+        versionCode 17//1.0.1
+        versionName "1.0.7"//1.0.1
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -20,6 +20,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 

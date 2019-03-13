@@ -24,7 +24,7 @@ import java.util.List;
 public class GoogleBillingUtil {
 
     private static final String TAG = "GoogleBillingUtil";
-    private static final boolean IS_DEBUG = false;
+    private static boolean IS_DEBUG = false;
     private static String[] inAppSKUS = new String[]{};//内购ID,必填，注意！如果用不着的请去掉多余的""
     private static String[] subsSKUS = new String[]{};//订阅ID,必填，注意！如果用不着的请去掉多余的""
 
@@ -33,13 +33,11 @@ public class GoogleBillingUtil {
 
     private static BillingClient mBillingClient;
     private static BillingClient.Builder builder ;
-    private static List<OnPurchaseFinishedListener> mOnPurchaseFinishedListenerList = new ArrayList<>();
-    private static List<OnStartSetupFinishedListener> mOnStartSetupFinishedListenerList = new ArrayList<>();
-    private static List<OnQueryFinishedListener> mOnQueryFinishedListenerList = new ArrayList<>();
-    private static List<OnConsumeResponseListener> mOnConsumeResponseListenerList = new ArrayList<>();
+    private static List<OnGoogleBillingListener> onGoogleBillingListenerList = new ArrayList<>();
+    private static ThreadLocal<OnGoogleBillingListener> onGoogleBillingListenerThreadLocal = new ThreadLocal<>();
     private MyPurchasesUpdatedListener purchasesUpdatedListener = new MyPurchasesUpdatedListener();
 
-    private boolean isAutoConsumeAsync = true;//是否在购买成功后自动消耗商品
+    private static boolean isAutoConsumeAsync = true;//是否在购买成功后自动消耗商品
 
     private static final GoogleBillingUtil mGoogleBillingUtil = new GoogleBillingUtil() ;
 
@@ -47,6 +45,8 @@ public class GoogleBillingUtil {
     {
 
     }
+
+    //region===================================初始化google应用内购买服务=================================
 
     /**
      * 设置skus
@@ -83,7 +83,7 @@ public class GoogleBillingUtil {
                     if(isGooglePlayServicesAvailable(context))
                     {
                         builder = BillingClient.newBuilder(context);
-                        mBillingClient = builder.build();
+                        mBillingClient = builder.setListener(purchasesUpdatedListener).build();
                     }
                     else
                     {
@@ -91,8 +91,8 @@ public class GoogleBillingUtil {
                         {
                             log("警告:GooglePlay服务处于不可用状态，请检查");
                         }
-                        for(OnStartSetupFinishedListener listener:mOnStartSetupFinishedListenerList){
-                            listener.onSetupError();
+                        for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                            listener.onError(GoogleBillingListenerTag.SETUP);
                         }
                     }
                 }
@@ -134,22 +134,22 @@ public class GoogleBillingUtil {
                         queryInventoryInApp();
                         queryInventorySubs();
                         queryPurchasesInApp();
-                        for(OnStartSetupFinishedListener listener:mOnStartSetupFinishedListenerList){
+                        for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
                             listener.onSetupSuccess();
                         }
                     }
                     else
                     {
                         log("初始化失败:onSetupFail:code="+billingResponseCode);
-                        for(OnStartSetupFinishedListener listener:mOnStartSetupFinishedListenerList){
-                            listener.onSetupFail(billingResponseCode);
+                        for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                            listener.onFail(GoogleBillingListenerTag.SETUP,billingResponseCode);
                         }
                     }
                 }
                 @Override
                 public void onBillingServiceDisconnected() {
-                    for(OnStartSetupFinishedListener listener:mOnStartSetupFinishedListenerList){
-                        listener.onSetupError();
+                    for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                        listener.onBillingServiceDisconnected();
                     }
                     log("初始化失败:onBillingServiceDisconnected");
                 }
@@ -162,46 +162,9 @@ public class GoogleBillingUtil {
         }
     }
 
-    /**
-     * Google购买商品回调接口(订阅和内购都走这个接口)
-     */
-    private class MyPurchasesUpdatedListener implements PurchasesUpdatedListener
-    {
-        @Override
-        public void onPurchasesUpdated(int responseCode, @Nullable List<Purchase> list) {
-            if(responseCode== BillingClient.BillingResponse.OK&&list!=null)
-            {
-                if(isAutoConsumeAsync)
-                {
-                    //消耗商品
-                    for(Purchase purchase:list)
-                    {
-                        String sku = purchase.getSku();
-                        if(sku!=null)
-                        {
-                            String skuType = getSkuType(sku);
-                            if(skuType!=null)
-                            {
-                                if(skuType.equals(BillingClient.SkuType.INAPP))
-                                {
-                                    consumeAsync(purchase.getPurchaseToken());
-                                }
-                            }
-                        }
-                    }
-                }
-                for(OnPurchaseFinishedListener listener:mOnPurchaseFinishedListenerList){
-                    listener.onPurchaseSuccess(list);
-                }
-            }
-            else
-            {
-                for(OnPurchaseFinishedListener listener:mOnPurchaseFinishedListenerList){
-                    listener.onPurchaseFail(responseCode);
-                }
-            }
-        }
-    }
+    //endregion
+
+    //region===================================查询商品=================================
 
     /**
      * 查询内购商品信息
@@ -225,8 +188,8 @@ public class GoogleBillingUtil {
             public void run() {
                 if (mBillingClient == null)
                 {
-                    for(OnQueryFinishedListener listener:mOnQueryFinishedListenerList){
-                        listener.onQueryError();
+                    for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                        listener.onError(GoogleBillingListenerTag.QUERY);
                     }
                     return ;
                 }
@@ -246,36 +209,10 @@ public class GoogleBillingUtil {
         };
         executeServiceRequest(runnable);
     }
+    
+    //endregion
 
-    /**
-     * Google查询商品信息回调接口
-     */
-    private class MySkuDetailsResponseListener implements SkuDetailsResponseListener
-    {
-        private String skuType ;
-
-        public MySkuDetailsResponseListener(String skuType) {
-            this.skuType = skuType;
-        }
-
-        @Override
-        public void onSkuDetailsResponse(int responseCode , List<SkuDetails> list) {
-            if(responseCode== BillingClient.BillingResponse.OK&&list!=null)
-            {
-                for(OnQueryFinishedListener listener:mOnQueryFinishedListenerList){
-                    listener.onQuerySuccess(skuType,list);
-                }
-            }
-            else
-            {
-                for(OnQueryFinishedListener listener:mOnQueryFinishedListenerList){
-                    listener.onQueryFail(responseCode);
-                }
-            }
-        }
-
-    }
-
+    //region===================================购买商品=================================
     /**
      * 发起内购
      * @param skuId
@@ -300,8 +237,8 @@ public class GoogleBillingUtil {
     {
         if(mBillingClient==null)
         {
-            for(OnPurchaseFinishedListener listener:mOnPurchaseFinishedListenerList){
-                listener.onPurchaseError();
+            for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                listener.onError(GoogleBillingListenerTag.PURCHASE);
             }
             return ;
         }
@@ -316,12 +253,14 @@ public class GoogleBillingUtil {
         }
         else
         {
-            for(OnPurchaseFinishedListener listener:mOnPurchaseFinishedListenerList){
-                listener.onPurchaseError();
+            for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                listener.onError(GoogleBillingListenerTag.PURCHASE);
             }
         }
     }
+    //endregion
 
+    //region===================================消耗商品=================================
     /**
      * 消耗商品
      * @param purchaseToken
@@ -336,24 +275,40 @@ public class GoogleBillingUtil {
     }
 
     /**
-     * Googlg消耗商品回调
+     * 消耗内购商品-通过sku数组
+     * @param sku
      */
-    private class MyConsumeResponseListener implements ConsumeResponseListener
+    public void consumeAsyncInApp(@NonNull String... sku)
     {
-        @Override
-        public void onConsumeResponse(int responseCode, String purchaseToken) {
-            if (responseCode == BillingClient.BillingResponse.OK) {
-                for(OnConsumeResponseListener listener:mOnConsumeResponseListenerList){
-                    listener.onConsumeSuccess(purchaseToken);
-                }
-            }else{
-                for(OnConsumeResponseListener listener:mOnConsumeResponseListenerList){
-                    listener.onConsumeFail(responseCode);
+        if(mBillingClient==null) {
+            return ;
+        }
+        List<String> skuList = Arrays.asList(sku);
+        consumeAsyncInApp(skuList);
+    }
+
+    /**
+     * 消耗内购商品-通过sku数组
+     * @param skuList
+     */
+    public void consumeAsyncInApp(@NonNull List<String> skuList)
+    {
+        if(mBillingClient==null) {
+            return ;
+        }
+        List<Purchase> purchaseList = queryPurchasesInApp();
+        if(purchaseList!=null){
+            for(Purchase purchase : purchaseList){
+                if(skuList.contains(purchase.getSku())){
+                    mBillingClient.consumeAsync(purchase.getPurchaseToken(), new MyConsumeResponseListener());
                 }
             }
         }
     }
 
+    //endregion    
+
+    //region===================================本地订单查询=================================
     /**
      * 获取已经内购的商品
      * @return
@@ -410,7 +365,37 @@ public class GoogleBillingUtil {
         }
         return null;
     }
+    //endregion
 
+    //region===================================在线订单查询=================================
+
+    /**
+     * 异步联网查询所有的内购历史-无论是过期的、取消、等等的订单
+     * @param listener
+     */
+    public void queryPurchaseHistoryAsyncInApp(PurchaseHistoryResponseListener listener){
+        if(isReady()) {
+            mBillingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.INAPP,listener);
+        } else{
+            listener.onPurchaseHistoryResponse(-1,null);
+        }
+    }
+
+    /**
+     * 异步联网查询所有的订阅历史-无论是过期的、取消、等等的订单
+     * @param listener
+     */
+    public void queryPurchaseHistoryAsyncSubs(PurchaseHistoryResponseListener listener){
+        if(isReady()) {
+            mBillingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.SUBS,listener);
+        }else{
+            listener.onPurchaseHistoryResponse(-1,null);
+        }
+    }
+
+    //endregion
+
+    //region===================================工具集合=================================
     /**
      * 获取有效订阅的数量
      * @return -1查询失败，0没有有效订阅，>0具有有效的订阅
@@ -475,14 +460,6 @@ public class GoogleBillingUtil {
         return -1;
     }
 
-    private void executeServiceRequest(final Runnable runnable)
-    {
-        if(startConnection())
-        {
-            runnable.run();
-        }
-    }
-
     /**
      * 通过序号获取订阅sku
      * @param position
@@ -534,6 +511,17 @@ public class GoogleBillingUtil {
         return null;
     }
 
+    //endregion
+
+    //region===================================其他方法=================================
+
+    private void executeServiceRequest(final Runnable runnable) {
+        if(startConnection())
+        {
+            runnable.run();
+        }
+    }
+
     /**
      * 检测GooglePlay服务是否可用(需要导入包api "com.google.android.gms:play-services-location:11.8.0"，也可以不检查，跳过这个代码)
      * @param context
@@ -552,210 +540,19 @@ public class GoogleBillingUtil {
     }
 
     /**
-     * 设置查询结果监听器{@link #addOnQueryFinishedListener}
-     * @param onQueryFinishedListener
+     * google内购服务是否已经准备好
      * @return
      */
-    @Deprecated
-    public GoogleBillingUtil setOnQueryFinishedListener(OnQueryFinishedListener onQueryFinishedListener) {
-        mOnQueryFinishedListenerList.clear();
-        return addOnQueryFinishedListener(onQueryFinishedListener);
-    }
-
-    /**
-     * 设置购买结果监听器{@link #addOnPurchaseFinishedListener}
-     * @param onPurchaseFinishedListener
-     * @return
-     */
-    @Deprecated
-    public GoogleBillingUtil setOnPurchaseFinishedListener(OnPurchaseFinishedListener onPurchaseFinishedListener) {
-        mOnPurchaseFinishedListenerList.clear();
-        return addOnPurchaseFinishedListener(onPurchaseFinishedListener);
-    }
-
-    /**
-     * 设置内购服务启动结果监听器{@link #addOnStartSetupFinishedListener}
-     * @param onStartSetupFinishedListener
-     * @return
-     */
-    @Deprecated
-    public GoogleBillingUtil setOnStartSetupFinishedListener(OnStartSetupFinishedListener onStartSetupFinishedListener) {
-        mOnStartSetupFinishedListenerList.clear();
-        return addOnStartSetupFinishedListener(onStartSetupFinishedListener);
-    }
-
-    /**
-     * 设置消耗结果监听器{@link #addmOnConsumeResponseListener}
-     * @param onConsumeResponseListener
-     * @return
-     */
-    @Deprecated
-    public GoogleBillingUtil setOnConsumeResponseListener(OnConsumeResponseListener onConsumeResponseListener) {
-        mOnConsumeResponseListenerList.clear();
-        return addOnConsumeResponseListener(onConsumeResponseListener);
-    }
-
-    /**
-     * 添加一个查询结果监听器
-     * @param onQueryFinishedListener
-     * @return
-     */
-    public GoogleBillingUtil addOnQueryFinishedListener(@NonNull OnQueryFinishedListener onQueryFinishedListener){
-        if(!mOnQueryFinishedListenerList.contains(onQueryFinishedListener))
-        {
-            mOnQueryFinishedListenerList.add(onQueryFinishedListener);
-        }
-        return mGoogleBillingUtil;
-    }
-
-    /**
-     * 添加一个购买结果监听器
-     * @param onQueryFinishedListener
-     * @return
-     */
-    public GoogleBillingUtil addOnPurchaseFinishedListener(@NonNull OnPurchaseFinishedListener onPurchaseFinishedListener) {
-        if(!mOnPurchaseFinishedListenerList.contains(onPurchaseFinishedListener))
-        {
-            mOnPurchaseFinishedListenerList.add(onPurchaseFinishedListener);
-        }
-        return mGoogleBillingUtil;
-    }
-
-    /**
-     * 添加一个内购服务启动结果监听器
-     * @param onQueryFinishedListener
-     * @return
-     */
-    public GoogleBillingUtil addOnStartSetupFinishedListener(@NonNull OnStartSetupFinishedListener onStartSetupFinishedListener) {
-        if(!mOnStartSetupFinishedListenerList.contains(onStartSetupFinishedListener))
-        {
-            mOnStartSetupFinishedListenerList.add(onStartSetupFinishedListener);
-        }
-        return mGoogleBillingUtil;
-    }
-
-    /**
-     * 添加一个消耗结果监听器
-     * @param onConsumeResponseListener
-     * @return
-     */
-    public GoogleBillingUtil addOnConsumeResponseListener(@NonNull OnConsumeResponseListener onConsumeResponseListener) {
-        if(!mOnConsumeResponseListenerList.contains(onConsumeResponseListener)){
-            mOnConsumeResponseListenerList.add(onConsumeResponseListener);
-        }
-        return mGoogleBillingUtil;
-    }
-
-    public static void removeOnQueryFinishedListener(@NonNull OnQueryFinishedListener onQueryFinishedListener){
-        mOnQueryFinishedListenerList.remove(onQueryFinishedListener);
-    }
-
-    public static void removeOnPurchaseFinishedListener(@NonNull OnPurchaseFinishedListener onPurchaseFinishedListener){
-        mOnPurchaseFinishedListenerList.remove(onPurchaseFinishedListener);
-    }
-
-    public static void removeOnStartSetupFinishedListener(@NonNull OnStartSetupFinishedListener onStartSetupFinishedListener){
-        mOnStartSetupFinishedListenerList.remove(onStartSetupFinishedListener);
-    }
-
-    public static void removeOnConsumeResponseListener(@NonNull OnConsumeResponseListener onConsumeResponseListener){
-        mOnConsumeResponseListenerList.remove(onConsumeResponseListener);
-    }
-
-    public static void removeAllOnQueryFinishedListener(){
-        mOnQueryFinishedListenerList.clear();
-    }
-
-    public static void removeAllOnPurchaseFinishedListener(){
-        mOnPurchaseFinishedListenerList.clear();
-    }
-
-    public static void removeAllOnStartSetupFinishedListener(){
-        mOnStartSetupFinishedListenerList.clear();
-    }
-
-    public static void removeAllOnConsumeResponseListener(){
-        mOnConsumeResponseListenerList.clear();
-    }
-
-    /**
-     *  本工具查询回调接口
-     */
-    public interface OnQueryFinishedListener{
-        //Inapp和sub都走这个接口,查询的时候一定要判断skuType
-        public void onQuerySuccess(String skuType, List<SkuDetails> list);
-        public void onQueryFail(int responseCode);
-        public void onQueryError();
-    }
-
-    /**
-     * 本工具购买回调接口(内购与订阅都走这接口)
-     */
-    public interface OnPurchaseFinishedListener{
-
-        public void onPurchaseSuccess(List<Purchase> list);
-
-        public void onPurchaseFail(int responseCode);
-
-        public void onPurchaseError();
-
-    }
-
-    /**
-     * google服务启动接口
-     */
-    public interface OnStartSetupFinishedListener{
-        public void onSetupSuccess();
-
-        public void onSetupFail(int responseCode);
-
-        public void onSetupError();
-    }
-
-    /**
-     * 消耗回调监听器
-     */
-    public interface OnConsumeResponseListener{
-        public void onConsumeSuccess(String purchaseToken);
-        public void onConsumeFail(int responseCode);
-    }
-
-    public boolean isReady() {
+    public static boolean isReady() {
         return mBillingClient!=null&&mBillingClient.isReady();
     }
 
-    public boolean isAutoConsumeAsync()
-    {
-        return isAutoConsumeAsync;
-    }
-
-    public void setIsAutoConsumeAsync(boolean isAutoConsumeAsync)
-    {
-        this.isAutoConsumeAsync= isAutoConsumeAsync;
-    }
-
     /**
-     * 清除所有监听器，防止内存泄漏
-     * 如果有多个页面使用了支付，需要确保上个页面的cleanListener在下一个页面的GoogleBillingUtil.getInstance()前使用。
-     * 所以不建议放在onDestory里调用
+     * 设置是否自动消耗内购商品
+     * @param isAutoConsumeAsync
      */
-    public static void cleanListener()
-    {
-        mOnPurchaseFinishedListenerList.clear();
-        mOnQueryFinishedListenerList.clear();
-        mOnStartSetupFinishedListenerList.clear();
-        mOnConsumeResponseListenerList.clear();
-
-    }
-
-    /**
-     * 清除内购监听器，防止内存泄漏
-     */
-    public static void onDestroy(){
-        if(builder!=null)
-        {
-            builder.setListener(null);
-        }
+    public static void setIsAutoConsumeAsync(boolean isAutoConsumeAsync) {
+        GoogleBillingUtil.isAutoConsumeAsync= isAutoConsumeAsync;
     }
 
     /**
@@ -775,11 +572,193 @@ public class GoogleBillingUtil {
         }
     }
 
+    //endregion
+
+    public GoogleBillingUtil addOnGoogleBillingListener(OnGoogleBillingListener onGoogleBillingListener){
+        onGoogleBillingListenerThreadLocal.set(onGoogleBillingListener);
+        onGoogleBillingListenerList.add(onGoogleBillingListener);
+        return this;
+    }
+
+    public void removeOnGoogleBillingListener(OnGoogleBillingListener onGoogleBillingListener){
+        onGoogleBillingListenerList.remove(onGoogleBillingListener);
+    }
+
+    /**
+     * 清除内购监听器，防止内存泄漏-在Activity-onDestroy里面调用。
+     * 需要确保onDestroy和build方法在同一个线程。
+     */
+    public void onDestroy(){
+        if(builder!=null) {
+            builder.setListener(null);
+        }
+        OnGoogleBillingListener onGoogleBillingListener = onGoogleBillingListenerThreadLocal.get();
+        if(onGoogleBillingListener!=null){
+            removeOnGoogleBillingListener(onGoogleBillingListener);
+            onGoogleBillingListenerThreadLocal.remove();
+        }
+    }
+
+    /**
+     * Google购买商品回调接口(订阅和内购都走这个接口)
+     */
+    private class MyPurchasesUpdatedListener implements PurchasesUpdatedListener
+    {
+        @Override
+        public void onPurchasesUpdated(int responseCode, @Nullable List<Purchase> list) {
+            if(responseCode== BillingClient.BillingResponse.OK&&list!=null)
+            {
+                if(isAutoConsumeAsync)
+                {
+                    //消耗商品
+                    for(Purchase purchase:list)
+                    {
+                        String sku = purchase.getSku();
+                        if(sku!=null)
+                        {
+                            String skuType = getSkuType(sku);
+                            if(skuType!=null)
+                            {
+                                if(skuType.equals(BillingClient.SkuType.INAPP))
+                                {
+                                    consumeAsync(purchase.getPurchaseToken());
+                                }
+                            }
+                        }
+                    }
+                }
+                for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                    listener.onPurchaseSuccess(list);
+                }
+            }
+            else
+            {
+                if(IS_DEBUG){
+                    log("购买失败,responseCode:"+responseCode);
+                }
+                for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                    listener.onFail(GoogleBillingListenerTag.PURCHASE,responseCode);
+                }
+            }
+        }
+    }
+
+    /**
+     * Google查询商品信息回调接口
+     */
+    private class MySkuDetailsResponseListener implements SkuDetailsResponseListener
+    {
+        private String skuType ;
+
+        public MySkuDetailsResponseListener(String skuType) {
+            this.skuType = skuType;
+        }
+
+        @Override
+        public void onSkuDetailsResponse(int responseCode , List<SkuDetails> list) {
+            if(responseCode== BillingClient.BillingResponse.OK&&list!=null)
+            {
+                for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                    listener.onQuerySuccess(skuType,list);
+                }
+            }
+            else
+            {
+                for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                    listener.onFail(GoogleBillingListenerTag.QUERY,responseCode);
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Googlg消耗商品回调
+     */
+    private class MyConsumeResponseListener implements ConsumeResponseListener
+    {
+        @Override
+        public void onConsumeResponse(int responseCode, String purchaseToken) {
+            if (responseCode == BillingClient.BillingResponse.OK) {
+                for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                    listener.onConsumeSuccess(purchaseToken);
+                }
+            }else{
+                for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                    listener.onFail(GoogleBillingListenerTag.COMSUME,responseCode);
+                }
+            }
+        }
+    }
+
+    public enum GoogleBillingListenerTag{
+
+        QUERY("query"),
+        PURCHASE("purchase"),
+        SETUP("setup"),
+        COMSUME("comsume")
+        ;
+        public String tag ;
+        GoogleBillingListenerTag(String tag){
+            this.tag = tag;
+        }
+    }
+
+    public interface OnGoogleBillingListener{
+
+        /**
+         * 查询成功
+         * @param skuType
+         * @param list
+         */
+        public default void onQuerySuccess(@NonNull String skuType,@NonNull List<SkuDetails> list){}
+
+        /**
+         * 购买成功
+         * @param list
+         */
+        public default void onPurchaseSuccess(@NonNull List<Purchase> list){}
+
+        /**
+         * 初始化成功
+         */
+        public default void onSetupSuccess(){}
+
+        /**
+         * 链接断开
+         */
+        public default void onBillingServiceDisconnected(){ }
+
+        /**
+         * 消耗成功
+         * @param purchaseToken
+         */
+        public default void onConsumeSuccess(@NonNull String purchaseToken){}
+
+        /**
+         * 失败回调
+         * @param tag @
+         * @param responseCode
+         */
+        public default void onFail(@NonNull GoogleBillingListenerTag tag,int responseCode){}
+
+        /**
+         * google组件初始化失败等等。
+         * @param tag
+         */
+        public default void onError(@NonNull GoogleBillingListenerTag tag){}
+
+    }
+
     private static void log(String msg)
     {
         if(IS_DEBUG)
         {
             Log.e(TAG,msg);
         }
+    }
+
+    public static void isDebug(boolean isDebug){
+        GoogleBillingUtil.IS_DEBUG = isDebug;
     }
 }

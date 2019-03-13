@@ -2,6 +2,7 @@ package com.tjbaobao.gitee.builling;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import com.android.billingclient.api.*;
@@ -191,7 +192,7 @@ public class GoogleBillingUtilOld {
                     {
                         mOnStartSetupFinishedListener.onSetupError();
                     }
-                    log("初始化失败:onBillingServiceDisconnected");
+                    log("初始化错误:onBillingServiceDisconnected");
                 }
             });
             return false;
@@ -386,10 +387,41 @@ public class GoogleBillingUtilOld {
     }
 
     /**
+     * 消耗内购商品-通过sku数组
+     * @param sku
+     */
+    public void consumeAsyncInApp(@NonNull String... sku)
+    {
+        if(mBillingClient==null) {
+            return ;
+        }
+        List<String> skuList = Arrays.asList(sku);
+        consumeAsyncInApp(skuList);
+    }
+
+    /**
+     * 消耗内购商品-通过sku数组
+     * @param skuList
+     */
+    public void consumeAsyncInApp(@NonNull List<String> skuList)
+    {
+        if(mBillingClient==null) {
+            return ;
+        }
+        List<Purchase> purchaseList = queryPurchasesInApp();
+        if(purchaseList!=null){
+            for(Purchase purchase : purchaseList){
+                if(skuList.contains(purchase.getSku())){
+                    mBillingClient.consumeAsync(purchase.getPurchaseToken(), new MyConsumeResponseListener(mOnConsumeResponseListener));
+                }
+            }
+        }
+    }
+
+    /**
      * Googlg消耗商品回调
      */
-    private class MyConsumeResponseListener implements ConsumeResponseListener
-    {
+    private class MyConsumeResponseListener implements ConsumeResponseListener {
         private OnConsumeResponseListener onConsumeResponseListener;
 
         public MyConsumeResponseListener(OnConsumeResponseListener mOnConsumeResponseListener) {
@@ -409,7 +441,6 @@ public class GoogleBillingUtilOld {
             }
         }
     }
-
 
     /**
      * 获取已经内购的商品
@@ -467,6 +498,39 @@ public class GoogleBillingUtilOld {
         }
         return null;
     }
+
+    /**
+     * 异步联网查询所有的内购历史-无论是过期的、取消、等等的订单
+     * @param listener
+     */
+    public void queryPurchaseHistoryAsyncInApp(PurchaseHistoryResponseListener listener){
+        if(mBillingClient!=null) {
+            if(mBillingClient.isReady()){
+                mBillingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.INAPP,listener);
+            }else{
+                listener.onPurchaseHistoryResponse(-1,null);
+            }
+        } else{
+            listener.onPurchaseHistoryResponse(-1,null);
+        }
+    }
+
+    /**
+     * 异步联网查询所有的订阅历史-无论是过期的、取消、等等的订单
+     * @param listener
+     */
+    public void queryPurchaseHistoryAsyncSubs(PurchaseHistoryResponseListener listener){
+        if(mBillingClient!=null) {
+            if(mBillingClient.isReady()){
+                mBillingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.SUBS,listener);
+            }else{
+                listener.onPurchaseHistoryResponse(-1,null);
+            }
+        }else{
+            listener.onPurchaseHistoryResponse(-1,null);
+        }
+    }
+
 
     /**
      * 获取有效订阅的数量
