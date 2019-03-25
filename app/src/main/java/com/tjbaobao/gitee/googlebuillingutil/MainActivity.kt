@@ -4,9 +4,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.PurchaseHistoryResponseListener
 import com.tjbaobao.gitee.builling.GoogleBillingUtil
 import kotlinx.android.synthetic.main.activity_main.*
 
