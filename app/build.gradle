@@ -8,7 +8,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.love.poly.puzzle.game"//原包名 com.tjbaobao.gitee.googlebuillingutil
+        applicationId "com.love.poly.puzzle.game"//原包名 com.tjbaobao.gitee.googlebillingutil
         minSdkVersion 16
         targetSdkVersion 28
         versionCode 17//1.0.1
