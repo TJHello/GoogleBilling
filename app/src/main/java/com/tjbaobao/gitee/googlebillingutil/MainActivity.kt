@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         GoogleBillingUtil.isDebug(true)
         GoogleBillingUtil.setSkus(arrayOf("love_poly_tips"), arrayOf())
+        //必须在主线程调用addOnGoogleBillingListener，否则onDestroy将无法回收监听器。这时将需要自己手动回收
         googleBillingUtil = GoogleBillingUtil.getInstance()
             .addOnGoogleBillingListener(OnGoogleBillingListener())
             .build(this)
@@ -24,7 +25,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * 使用了JAVA8特性，可以选择性实现自己想要的方法。
+     */
     private inner class OnGoogleBillingListener : GoogleBillingUtil.OnGoogleBillingListener{
+        //内购服务初始化成功
         override fun onSetupSuccess() {
             checkSubs()
         }
@@ -54,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         googleBillingUtil.onDestroy()
+        //退出程序的时候可以调用(实验性)
         GoogleBillingUtil.endConnection()
     }
 
