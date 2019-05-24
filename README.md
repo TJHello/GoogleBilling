@@ -42,7 +42,7 @@ dependencies {
         GoogleBillingUtil.setSkus(arrayOf("inappSku"), arrayOf("subsSku"))
         //必须在主线程调用addOnGoogleBillingListener，否则onDestroy将无法回收监听器。这时将需要自己手动回收
         googleBillingUtil = GoogleBillingUtil.getInstance()
-            .addOnGoogleBillingListener(OnGoogleBillingListener())
+            .addOnGoogleBillingListener(this,OnGoogleBillingListener())
             .build(this)
     }
     
@@ -58,7 +58,7 @@ dependencies {
     
     override fun onDestroy() {
         super.onDestroy()
-        googleBillingUtil.onDestroy()
+        googleBillingUtil.onDestroy(this)
     }
 ```
 
