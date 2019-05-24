@@ -7,10 +7,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import com.android.billingclient.api.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * 作者:TJbaobao
@@ -32,7 +29,7 @@ public class GoogleBillingUtil {
     private static BillingClient mBillingClient;
     private static BillingClient.Builder builder ;
     private static List<OnGoogleBillingListener> onGoogleBillingListenerList = new ArrayList<>();
-    private static ThreadLocal<OnGoogleBillingListener> onGoogleBillingListenerThreadLocal = new ThreadLocal<>();
+    private static Map<String,OnGoogleBillingListener> onGoogleBillingListenerMap = new HashMap<>();
     private MyPurchasesUpdatedListener purchasesUpdatedListener = new MyPurchasesUpdatedListener();
 
     private static boolean isAutoConsumeAsync = true;//是否在购买成功后自动消耗商品
@@ -543,8 +540,8 @@ public class GoogleBillingUtil {
 
     //endregion
 
-    public GoogleBillingUtil addOnGoogleBillingListener(OnGoogleBillingListener onGoogleBillingListener){
-        onGoogleBillingListenerThreadLocal.set(onGoogleBillingListener);
+    public GoogleBillingUtil addOnGoogleBillingListener(Activity activity,OnGoogleBillingListener onGoogleBillingListener){
+        onGoogleBillingListenerMap.put(activity.getLocalClassName(),onGoogleBillingListener);
         onGoogleBillingListenerList.add(onGoogleBillingListener);
         return this;
     }
@@ -553,19 +550,23 @@ public class GoogleBillingUtil {
         onGoogleBillingListenerList.remove(onGoogleBillingListener);
     }
 
+    public void removeOnGoogleBillingListener(Activity activity){
+        OnGoogleBillingListener onGoogleBillingListener = onGoogleBillingListenerMap.get(activity.getLocalClassName());
+        if(onGoogleBillingListener!=null){
+            removeOnGoogleBillingListener(onGoogleBillingListener);
+            onGoogleBillingListenerMap.remove(activity.getLocalClassName());
+        }
+    }
+
     /**
      * 清除内购监听器，防止内存泄漏-在Activity-onDestroy里面调用。
      * 需要确保onDestroy和build方法在同一个线程。
      */
-    public void onDestroy(){
+    public void onDestroy(Activity activity){
         if(builder!=null) {
             builder.setListener(null);
         }
-        OnGoogleBillingListener onGoogleBillingListener = onGoogleBillingListenerThreadLocal.get();
-        if(onGoogleBillingListener!=null){
-            removeOnGoogleBillingListener(onGoogleBillingListener);
-            onGoogleBillingListenerThreadLocal.remove();
-        }
+        removeOnGoogleBillingListener(activity);
     }
 
     /**

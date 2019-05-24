@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         GoogleBillingUtil.setSkus(arrayOf("love_poly_tips"), arrayOf())
         //必须在主线程调用addOnGoogleBillingListener，否则onDestroy将无法回收监听器。这时将需要自己手动回收
         googleBillingUtil = GoogleBillingUtil.getInstance()
-            .addOnGoogleBillingListener(OnGoogleBillingListener())
+            .addOnGoogleBillingListener(this,OnGoogleBillingListener())
             .build(this)
         btNext.setOnClickListener {
             NextActivity.toActivity(this)
@@ -39,8 +39,7 @@ class MainActivity : AppCompatActivity() {
      * 检查是否有有效订阅
      */
     private fun checkSubs(){
-        val subsSize = googleBillingUtil.purchasesSizeSubs
-        when(subsSize){
+        when(googleBillingUtil.purchasesSizeSubs){
             0->{
                 //不具备有效订阅
                 Toast.makeText(this@MainActivity,"该用户不具备有效订阅", Toast.LENGTH_LONG).show()
@@ -58,7 +57,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        googleBillingUtil.onDestroy()
+        googleBillingUtil.onDestroy(this)
         //退出程序的时候可以调用(实验性)
         GoogleBillingUtil.endConnection()
     }
