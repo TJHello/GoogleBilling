@@ -16,7 +16,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         GoogleBillingUtil.isDebug(true)
         GoogleBillingUtil.setSkus(arrayOf("love_poly_tips"), arrayOf())
-        //必须在主线程调用addOnGoogleBillingListener，否则onDestroy将无法回收监听器。这时将需要自己手动回收
         googleBillingUtil = GoogleBillingUtil.getInstance()
             .addOnGoogleBillingListener(this,OnGoogleBillingListener())
             .build(this)
