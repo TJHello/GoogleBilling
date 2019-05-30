@@ -65,7 +65,6 @@ public class GoogleBillingUtil {
     /**
      * 开始建立内购连接
      * @param context applicationContext
-     * @return
      */
     public GoogleBillingUtil build(Context context)
     {
@@ -198,7 +197,6 @@ public class GoogleBillingUtil {
     /**
      * 发起内购
      * @param skuId
-     * @return
      */
     public void purchaseInApp(Activity activity, String skuId)
     {
@@ -208,7 +206,6 @@ public class GoogleBillingUtil {
     /**
      * 发起订阅
      * @param skuId
-     * @return
      */
     public void purchaseSubs(Activity activity,String skuId)
     {
@@ -293,7 +290,7 @@ public class GoogleBillingUtil {
     //region===================================本地订单查询=================================
     /**
      * 获取已经内购的商品
-     * @return
+     * @return 商品列表
      */
     public List<Purchase> queryPurchasesInApp()
     {
@@ -302,7 +299,7 @@ public class GoogleBillingUtil {
 
     /**
      * 获取已经订阅的商品
-     * @return
+     * @return 商品列表
      */
     public List<Purchase> queryPurchasesSubs()
     {
@@ -395,7 +392,7 @@ public class GoogleBillingUtil {
     /**
      * 通过sku获取订阅商品序号
      * @param sku
-     * @return
+     * @return 序号
      */
     public int getSubsPositionBySku(String sku)
     {
@@ -445,7 +442,7 @@ public class GoogleBillingUtil {
     /**
      * 通过序号获取订阅sku
      * @param position
-     * @return
+     * @return sku
      */
     public String getSubsSkuByPosition(int position)
     {
@@ -461,7 +458,7 @@ public class GoogleBillingUtil {
     /**
      * 通过序号获取内购sku
      * @param position
-     * @return
+     * @return sku
      */
     public String getInAppSkuByPosition(int position)
     {
@@ -507,7 +504,7 @@ public class GoogleBillingUtil {
 
     /**
      * google内购服务是否已经准备好
-     * @return
+     * @return boolean
      */
     public static boolean isReady() {
         return mBillingClient!=null&&mBillingClient.isReady();

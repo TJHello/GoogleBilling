@@ -313,7 +313,6 @@ public class GoogleBillingUtilOld {
     /**
      * 发起内购
      * @param skuId
-     * @return
      */
     public void purchaseInApp(Activity activity,String skuId)
     {
@@ -323,7 +322,6 @@ public class GoogleBillingUtilOld {
     /**
      * 发起订阅
      * @param skuId
-     * @return
      */
     public void purchaseSubs(Activity activity,String skuId)
     {
@@ -428,7 +426,6 @@ public class GoogleBillingUtilOld {
 
     /**
      * 获取已经内购的商品
-     * @return
      */
     public List<Purchase> queryPurchasesInApp()
     {
@@ -437,7 +434,7 @@ public class GoogleBillingUtilOld {
 
     /**
      * 获取已经订阅的商品
-     * @return
+     * @return 商品列表
      */
     public List<Purchase> queryPurchasesSubs()
     {
@@ -533,7 +530,7 @@ public class GoogleBillingUtilOld {
     /**
      * 通过sku获取订阅商品序号
      * @param sku
-     * @return
+     * @return 序号
      */
     public int getSubsPositionBySku(String sku)
     {
@@ -591,7 +588,7 @@ public class GoogleBillingUtilOld {
     /**
      * 通过序号获取订阅sku
      * @param position
-     * @return
+     * @return sku
      */
     public String getSubsSkuByPosition(int position)
     {
@@ -607,7 +604,7 @@ public class GoogleBillingUtilOld {
     /**
      * 通过序号获取内购sku
      * @param position
-     * @return
+     * @return sku
      */
     public String getInAppSkuByPosition(int position)
     {
