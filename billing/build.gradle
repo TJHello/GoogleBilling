@@ -36,7 +36,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     //内购
-    implementation 'com.android.billingclient:billing:1.2'
+    api 'com.android.billingclient:billing:1.2'
 }
 
 task sourcesJar(type: Jar) {
