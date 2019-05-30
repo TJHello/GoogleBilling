@@ -32,7 +32,7 @@ class NextActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.next_activity_layout)
         googleBillingUtil = GoogleBillingUtil.getInstance()
-            .addOnGoogleBillingListener(OnGoogleBillingListener())
+            .addOnGoogleBillingListener(this,OnGoogleBillingListener())
             .build(this)
         tvBack.setOnClickListener {
             this.finish()
@@ -77,7 +77,7 @@ class NextActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        googleBillingUtil.onDestroy()
+        googleBillingUtil.onDestroy(this)
     }
 
 }

@@ -5,8 +5,6 @@ group='com.gitee.tjbaobao'
 android {
     compileSdkVersion 28
 
-
-
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 28

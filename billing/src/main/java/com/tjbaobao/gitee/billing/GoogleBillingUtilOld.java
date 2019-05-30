@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import com.android.billingclient.api.*;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -117,22 +115,8 @@ public class GoogleBillingUtilOld {
             {
                 if(mBillingClient==null)
                 {
-                    if(isGooglePlayServicesAvailable(context))
-                    {
-                        builder = BillingClient.newBuilder(context);
-                        mBillingClient = builder.setListener(mGoogleBillingUtil.new MyPurchasesUpdatedListener()).build();
-                    }
-                    else
-                    {
-                        if(IS_DEBUG)
-                        {
-                            log("警告:GooglePlay服务处于不可用状态，请检查");
-                        }
-                        if(mOnStartSetupFinishedListener!=null)
-                        {
-                            mOnStartSetupFinishedListener.onSetupError();
-                        }
-                    }
+                    builder = BillingClient.newBuilder(context);
+                    mBillingClient = builder.setListener(mGoogleBillingUtil.new MyPurchasesUpdatedListener()).build();
                 }
                 else
                 {
@@ -655,22 +639,6 @@ public class GoogleBillingUtilOld {
         return null;
     }
 
-    /**
-     * 检测GooglePlay服务是否可用(需要导入包api "com.google.android.gms:play-services-location:11.8.0"，也可以不检查，跳过这个代码)
-     * @param context
-     * @return
-     */
-    public static boolean isGooglePlayServicesAvailable(Context context)
-    {
-        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
-        if(googleApiAvailability!=null)
-        {
-            int resultCode = googleApiAvailability.isGooglePlayServicesAvailable(context);
-            return resultCode == ConnectionResult.SUCCESS;
-        }
-        return false;
-        //return true;//不检查直接跳过
-    }
 
     public GoogleBillingUtilOld setOnQueryFinishedListener(OnQueryFinishedListener onQueryFinishedListener) {
         mOnQueryFinishedListener = onQueryFinishedListener;
