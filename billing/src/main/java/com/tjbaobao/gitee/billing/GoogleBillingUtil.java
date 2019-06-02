@@ -215,8 +215,6 @@ public class GoogleBillingUtil {
         purchase(activity,skuId, BillingClient.SkuType.INAPP);
     }
 
-
-
     /**
      * 发起订阅
      * @param skuId 订阅商品id

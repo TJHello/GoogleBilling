@@ -12,8 +12,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import android.support.v4.view.accessibility.AccessibilityEventCompat.setAction
-
 
 
 class MainActivity : AppCompatActivity() {
