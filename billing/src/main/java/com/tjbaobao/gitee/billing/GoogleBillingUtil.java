@@ -237,11 +237,20 @@ public class GoogleBillingUtil {
         if(startConnection(tag))
         {
             builder.setListener(purchasesUpdatedListener);
-            BillingFlowParams flowParams = BillingFlowParams.newBuilder()
-                    .setSku(skuId)
+            List<String> skuList = new ArrayList<>();
+            skuList.add(skuId);
+            SkuDetailsParams skuDetailsParams = SkuDetailsParams.newBuilder()
+                    .setSkusList(skuList)
                     .setType(skuType)
                     .build();
-            mBillingClient.launchBillingFlow(activity,flowParams);
+            mBillingClient.querySkuDetailsAsync(skuDetailsParams, (responseCode, skuDetailsList) -> {
+                if(!skuDetailsList.isEmpty()){
+                    BillingFlowParams flowParams = BillingFlowParams.newBuilder()
+                            .setSkuDetails(skuDetailsList.get(0))
+                            .build();
+                    mBillingClient.launchBillingFlow(activity,flowParams);
+                }
+            });
         }
         else
         {
@@ -250,6 +259,8 @@ public class GoogleBillingUtil {
             }
         }
     }
+
+
     //endregion
 
     //region===================================消耗商品=================================
