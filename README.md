@@ -26,7 +26,7 @@ android {
     }
 }
 dependencies {
-    implementation 'com.gitee.tjbaobao:GoogleBilling:1.2.1-alpha08'
+    implementation 'com.gitee.tjbaobao:GoogleBilling:1.2.1-alpha10'
 }
 
 
