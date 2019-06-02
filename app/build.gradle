@@ -7,15 +7,6 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
 
-    signingConfigs {
-        config {
-            keyAlias 'com.diamond.art.color.by.number'
-            keyPassword 'MC04eG9GJTykJA1z'
-            storeFile file('D:\\Android\\appkey\\com.diamond.art.color.by.number\\com.diamond.art.color.by.number\\keystore.jks')
-            storePassword 'MC04eG9GJTykJA1z'
-        }
-    }
-
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.diamond.art.color.by.number"//原包名 com.tjbaobao.gitee.googlebillingutil
@@ -29,9 +20,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-        debug {
-            signingConfig signingConfigs.config
         }
     }
 
