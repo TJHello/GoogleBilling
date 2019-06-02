@@ -2,8 +2,8 @@
 
 #### 基于com.android.billingclient:billing:2.0.0，对整个支付流程进行封装。
 ##### QQ群交流：425219113(计算机语言交流)
-
-#### 2.0.0新特性[(官方说明)](http://https://developer.android.com/google/play/billing/billing_library_releases_notes?hl=zh-cn)
+##### [1.2.1入口](https://gitee.com/tjbaobao/GoogleBilling/tree/master/) 
+##### 2.0.0新特性[(官方说明)](http://https://developer.android.com/google/play/billing/billing_library_releases_notes?hl=zh-cn)
 
 - 增加"确认购买"概念，每个新购买的商品都需要调用acknowledgePurchase方法来进行确认购买，如果没有进行确认购买，三天后会遭受系统自动退款。
 - 强制删除BillingFlowParams.setSku（）方法，改为使用BillingClient.querySkuDetailsAsync()+BillingFlowParams.Builder.setSkuDetails()来配置发起购买的参数。
