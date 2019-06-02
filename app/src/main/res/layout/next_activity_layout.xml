@@ -18,6 +18,16 @@
                 android:textSize="16sp"
                 android:textColor="#ffffff"
                 android:padding="16dp"
+                android:background="@drawable/fw_ripple"
+                />
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="发起购买"
+                android:textSize="16sp"
+                android:textColor="#ffffff"
+                android:padding="16dp"
+                android:layout_centerHorizontal="true"
                 />
     </RelativeLayout>
     <android.support.v7.widget.AppCompatButton
@@ -40,12 +50,13 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="付费是真的，请谨慎操作!"
+            android:text="付费是真的，请谨慎操作!\n需要确保签名、版本号与线上一致才能发起购买"
             android:textColor="#ff0000"
             android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@id/btSubs"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginTop="16dp"
+            android:gravity="center"
             />
 </android.support.constraint.ConstraintLayout>

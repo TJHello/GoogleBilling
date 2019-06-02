@@ -6,19 +6,32 @@ apply plugin: 'kotlin-android-extensions'
 
 
 android {
+
+    signingConfigs {
+        config {
+            keyAlias 'com.diamond.art.color.by.number'
+            keyPassword 'MC04eG9GJTykJA1z'
+            storeFile file('D:\\Android\\appkey\\com.diamond.art.color.by.number\\com.diamond.art.color.by.number\\keystore.jks')
+            storePassword 'MC04eG9GJTykJA1z'
+        }
+    }
+
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.love.poly.puzzle.game"//原包名 com.tjbaobao.gitee.googlebillingutil
+        applicationId "com.diamond.art.color.by.number"//原包名 com.tjbaobao.gitee.googlebillingutil
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 17//1.0.1
-        versionName "1.0.7"//1.0.1
+        versionCode 20//1.0.1
+        versionName "1.20"//1.0.1
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.config
         }
     }
 
@@ -36,7 +49,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-//    implementation 'com.gitee.tjbaobao:GoogleBilling:1.2.1-alpha08'
+//    implementation 'com.gitee.tjbaobao:GoogleBilling:1.2.1-alpha04'
 
     implementation project(':billing')
 }

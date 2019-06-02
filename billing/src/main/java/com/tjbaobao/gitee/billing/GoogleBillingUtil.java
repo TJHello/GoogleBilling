@@ -1,7 +1,6 @@
 package com.tjbaobao.gitee.billing;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -15,7 +14,8 @@ import java.util.*;
  * 说明:
  * 使用：
  */
-@SuppressWarnings("ALL")
+
+@SuppressWarnings({"WeakerAccess", "unused", "UnusedReturnValue"})
 public class GoogleBillingUtil {
 
     private static final String TAG = "GoogleBillingUtil";
@@ -64,42 +64,47 @@ public class GoogleBillingUtil {
 
     /**
      * 开始建立内购连接
-     * @param context applicationContext
+     * @param activity activity
      */
-    public GoogleBillingUtil build(Context context)
+    public GoogleBillingUtil build(Activity activity)
     {
+        purchasesUpdatedListener.tag = getTag(activity);
         if(mBillingClient==null)
         {
             synchronized (mGoogleBillingUtil)
             {
                 if(mBillingClient==null)
                 {
-                    builder = BillingClient.newBuilder(context);
+                    builder = BillingClient.newBuilder(activity);
                     mBillingClient = builder.setListener(purchasesUpdatedListener).build();
                 }
                 else
                 {
-                    builder.setListener(mGoogleBillingUtil.new MyPurchasesUpdatedListener());
+                    builder.setListener(purchasesUpdatedListener);
                 }
             }
         }
         else
         {
-            builder.setListener(mGoogleBillingUtil.new MyPurchasesUpdatedListener());
+            builder.setListener(purchasesUpdatedListener);
         }
         synchronized (mGoogleBillingUtil)
         {
-            if(mGoogleBillingUtil.startConnection())
+            if(mGoogleBillingUtil.startConnection(activity))
             {
-                mGoogleBillingUtil.queryInventoryInApp();
-                mGoogleBillingUtil.queryInventorySubs();
-                mGoogleBillingUtil.queryPurchasesInApp();
+                mGoogleBillingUtil.queryInventoryInApp(getTag(activity));
+                mGoogleBillingUtil.queryInventorySubs(getTag(activity));
+                mGoogleBillingUtil.queryPurchasesInApp(getTag(activity));
             }
         }
         return mGoogleBillingUtil;
     }
 
-    public boolean startConnection()
+    public boolean startConnection(Activity activity){
+        return startConnection(getTag(activity));
+    }
+
+    private boolean startConnection(String tag)
     {
         if(mBillingClient==null)
         {
@@ -112,18 +117,18 @@ public class GoogleBillingUtil {
                 @Override
                 public void onBillingSetupFinished(@BillingClient.BillingResponse int billingResponseCode) {
                     if (billingResponseCode == BillingClient.BillingResponse.OK) {
-                        queryInventoryInApp();
-                        queryInventorySubs();
-                        queryPurchasesInApp();
+                        queryInventoryInApp(tag);
+                        queryInventorySubs(tag);
+                        queryPurchasesInApp(tag);
                         for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                            listener.onSetupSuccess();
+                            listener.onSetupSuccess(listener.tag.equals(tag));
                         }
                     }
                     else
                     {
                         log("初始化失败:onSetupFail:code="+billingResponseCode);
                         for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                            listener.onFail(GoogleBillingListenerTag.SETUP,billingResponseCode);
+                            listener.onFail(GoogleBillingListenerTag.SETUP,billingResponseCode, listener.tag.equals(tag));
                         }
                     }
                 }
@@ -150,45 +155,52 @@ public class GoogleBillingUtil {
     /**
      * 查询内购商品信息
      */
-    public void queryInventoryInApp()
+    public void queryInventoryInApp(Activity activity)
     {
-        queryInventory(BillingClient.SkuType.INAPP);
+        queryInventoryInApp(getTag(activity));
+    }
+
+    private void queryInventoryInApp(String tag)
+    {
+        queryInventory(tag,BillingClient.SkuType.INAPP);
     }
 
     /**
      * 查询订阅商品信息
      */
-    public void queryInventorySubs()
+    public void queryInventorySubs(Activity activity)
     {
-        queryInventory(BillingClient.SkuType.SUBS);
+        queryInventory(getTag(activity),BillingClient.SkuType.SUBS);
     }
 
-    private void queryInventory(final String skuType) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (mBillingClient == null)
-                {
-                    for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                        listener.onError(GoogleBillingListenerTag.QUERY);
-                    }
-                    return ;
+    public void queryInventorySubs(String tag)
+    {
+        queryInventory(tag,BillingClient.SkuType.SUBS);
+    }
+
+    private void queryInventory(String tag,final String skuType) {
+        Runnable runnable = () -> {
+            if (mBillingClient == null)
+            {
+                for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                    listener.onError(GoogleBillingListenerTag.QUERY, listener.tag.equals(tag));
                 }
-                ArrayList<String> skuList = new ArrayList<>();
-                if(skuType.equals(BillingClient.SkuType.INAPP))
-                {
-                    Collections.addAll(skuList, inAppSKUS);
-                }
-                else if(skuType.equals(BillingClient.SkuType.SUBS))
-                {
-                    Collections.addAll(skuList, subsSKUS);
-                }
-                SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-                params.setSkusList(skuList).setType(skuType);
-                mBillingClient.querySkuDetailsAsync(params.build(),new MySkuDetailsResponseListener(skuType));
+                return ;
             }
+            ArrayList<String> skuList = new ArrayList<>();
+            if(skuType.equals(BillingClient.SkuType.INAPP))
+            {
+                Collections.addAll(skuList, inAppSKUS);
+            }
+            else if(skuType.equals(BillingClient.SkuType.SUBS))
+            {
+                Collections.addAll(skuList, subsSKUS);
+            }
+            SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
+            params.setSkusList(skuList).setType(skuType);
+            mBillingClient.querySkuDetailsAsync(params.build(),new MySkuDetailsResponseListener(skuType,tag));
         };
-        executeServiceRequest(runnable);
+        executeServiceRequest(tag,runnable);
     }
     
     //endregion
@@ -196,16 +208,18 @@ public class GoogleBillingUtil {
     //region===================================购买商品=================================
     /**
      * 发起内购
-     * @param skuId
+     * @param skuId 内购商品id
      */
     public void purchaseInApp(Activity activity, String skuId)
     {
         purchase(activity,skuId, BillingClient.SkuType.INAPP);
     }
 
+
+
     /**
      * 发起订阅
-     * @param skuId
+     * @param skuId 订阅商品id
      */
     public void purchaseSubs(Activity activity,String skuId)
     {
@@ -214,14 +228,15 @@ public class GoogleBillingUtil {
 
     private void purchase(Activity activity,final String skuId,final String skuType)
     {
+        String tag = getTag(activity);
         if(mBillingClient==null)
         {
             for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                listener.onError(GoogleBillingListenerTag.PURCHASE);
+                listener.onError(GoogleBillingListenerTag.PURCHASE, listener.tag.equals(tag));
             }
             return ;
         }
-        if(startConnection())
+        if(startConnection(tag))
         {
             builder.setListener(purchasesUpdatedListener);
             BillingFlowParams flowParams = BillingFlowParams.newBuilder()
@@ -233,7 +248,7 @@ public class GoogleBillingUtil {
         else
         {
             for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                listener.onError(GoogleBillingListenerTag.PURCHASE);
+                listener.onError(GoogleBillingListenerTag.PURCHASE,listener.tag.equals(tag));
             }
         }
     }
@@ -242,44 +257,53 @@ public class GoogleBillingUtil {
     //region===================================消耗商品=================================
     /**
      * 消耗商品
-     * @param purchaseToken
+     * @param purchaseToken {@link Purchase#getPurchaseToken()}
      */
-    public void consumeAsync(String purchaseToken)
+    public void consumeAsync(Activity activity,String purchaseToken)
+    {
+        consumeAsync(getTag(activity),purchaseToken);
+    }
+
+    /**
+     * 消耗商品
+     * @param purchaseToken {@link Purchase#getPurchaseToken()}
+     */
+    private void consumeAsync(String tag,String purchaseToken)
     {
         if(mBillingClient==null)
         {
             return ;
         }
-        mBillingClient.consumeAsync(purchaseToken, new MyConsumeResponseListener());
+        mBillingClient.consumeAsync(purchaseToken, new MyConsumeResponseListener(tag));
     }
 
     /**
      * 消耗内购商品-通过sku数组
-     * @param sku
+     * @param sku sku
      */
-    public void consumeAsyncInApp(@NonNull String... sku)
+    public void consumeAsyncInApp(Activity activity,@NonNull String... sku)
     {
         if(mBillingClient==null) {
             return ;
         }
         List<String> skuList = Arrays.asList(sku);
-        consumeAsyncInApp(skuList);
+        consumeAsyncInApp(activity,skuList);
     }
 
     /**
      * 消耗内购商品-通过sku数组
-     * @param skuList
+     * @param skuList sku数组
      */
-    public void consumeAsyncInApp(@NonNull List<String> skuList)
+    public void consumeAsyncInApp(Activity activity,@NonNull List<String> skuList)
     {
         if(mBillingClient==null) {
             return ;
         }
-        List<Purchase> purchaseList = queryPurchasesInApp();
+        List<Purchase> purchaseList = queryPurchasesInApp(activity);
         if(purchaseList!=null){
             for(Purchase purchase : purchaseList){
                 if(skuList.contains(purchase.getSku())){
-                    mBillingClient.consumeAsync(purchase.getPurchaseToken(), new MyConsumeResponseListener());
+                    mBillingClient.consumeAsync(purchase.getPurchaseToken(), new MyConsumeResponseListener(getTag(activity)));
                 }
             }
         }
@@ -292,21 +316,26 @@ public class GoogleBillingUtil {
      * 获取已经内购的商品
      * @return 商品列表
      */
-    public List<Purchase> queryPurchasesInApp()
+    public List<Purchase> queryPurchasesInApp(Activity activity)
     {
-        return queryPurchases(BillingClient.SkuType.INAPP);
+        return queryPurchases(getTag(activity),BillingClient.SkuType.INAPP);
+    }
+
+    private List<Purchase> queryPurchasesInApp(String tag)
+    {
+        return queryPurchases(tag,BillingClient.SkuType.INAPP);
     }
 
     /**
      * 获取已经订阅的商品
      * @return 商品列表
      */
-    public List<Purchase> queryPurchasesSubs()
+    public List<Purchase> queryPurchasesSubs(Activity activity)
     {
-        return queryPurchases(BillingClient.SkuType.SUBS);
+        return queryPurchases(getTag(activity),BillingClient.SkuType.SUBS);
     }
 
-    private List<Purchase> queryPurchases(String skuType)
+    private List<Purchase> queryPurchases(String tag,String skuType)
     {
         if(mBillingClient==null)
         {
@@ -314,7 +343,7 @@ public class GoogleBillingUtil {
         }
         if(!mBillingClient.isReady())
         {
-            startConnection();
+            startConnection(tag);
         }
         else
         {
@@ -332,7 +361,7 @@ public class GoogleBillingUtil {
                             {
                                 if(skuType.equals(BillingClient.SkuType.INAPP))
                                 {
-                                    consumeAsync(purchase.getPurchaseToken());
+                                    consumeAsync(tag,purchase.getPurchaseToken());
                                 }
                             }
                         }
@@ -350,25 +379,25 @@ public class GoogleBillingUtil {
 
     /**
      * 异步联网查询所有的内购历史-无论是过期的、取消、等等的订单
-     * @param listener
+     * @param listener 监听器
      */
     public void queryPurchaseHistoryAsyncInApp(PurchaseHistoryResponseListener listener){
         if(isReady()) {
             mBillingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.INAPP,listener);
         } else{
-            listener.onPurchaseHistoryResponse(-1,null);
+            listener.onPurchaseHistoryResponse(BillingClient.BillingResponse.SERVICE_DISCONNECTED,null);
         }
     }
 
     /**
      * 异步联网查询所有的订阅历史-无论是过期的、取消、等等的订单
-     * @param listener
+     * @param listener 监听器
      */
     public void queryPurchaseHistoryAsyncSubs(PurchaseHistoryResponseListener listener){
         if(isReady()) {
             mBillingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.SUBS,listener);
         }else{
-            listener.onPurchaseHistoryResponse(-1,null);
+            listener.onPurchaseHistoryResponse(BillingClient.BillingResponse.SERVICE_DISCONNECTED,null);
         }
     }
 
@@ -379,9 +408,9 @@ public class GoogleBillingUtil {
      * 获取有效订阅的数量
      * @return -1查询失败，0没有有效订阅，>0具有有效的订阅
      */
-    public int getPurchasesSizeSubs()
+    public int getPurchasesSizeSubs(Activity activity)
     {
-        List<Purchase> list = queryPurchasesSubs();
+        List<Purchase> list = queryPurchasesSubs(activity);
         if(list!=null)
         {
             return list.size();
@@ -391,7 +420,7 @@ public class GoogleBillingUtil {
 
     /**
      * 通过sku获取订阅商品序号
-     * @param sku
+     * @param sku sku
      * @return 序号
      */
     public int getSubsPositionBySku(String sku)
@@ -401,7 +430,7 @@ public class GoogleBillingUtil {
 
     /**
      * 通过sku获取内购商品序号
-     * @param sku
+     * @param sku sku
      * @return 成功返回需要 失败返回-1
      */
     public int getInAppPositionBySku(String sku)
@@ -441,7 +470,7 @@ public class GoogleBillingUtil {
 
     /**
      * 通过序号获取订阅sku
-     * @param position
+     * @param position 序号
      * @return sku
      */
     public String getSubsSkuByPosition(int position)
@@ -457,7 +486,7 @@ public class GoogleBillingUtil {
 
     /**
      * 通过序号获取内购sku
-     * @param position
+     * @param position 序号
      * @return sku
      */
     public String getInAppSkuByPosition(int position)
@@ -474,7 +503,7 @@ public class GoogleBillingUtil {
 
     /**
      * 通过sku获取商品类型(订阅获取内购)
-     * @param sku
+     * @param sku sku
      * @return inapp内购，subs订阅
      */
     public String getSkuType(String sku)
@@ -490,12 +519,16 @@ public class GoogleBillingUtil {
         return null;
     }
 
+    private String getTag(Activity activity){
+        return activity.getLocalClassName();
+    }
+
     //endregion
 
     //region===================================其他方法=================================
 
-    private void executeServiceRequest(final Runnable runnable) {
-        if(startConnection())
+    private void executeServiceRequest(String tag,final Runnable runnable) {
+        if(startConnection(tag))
         {
             runnable.run();
         }
@@ -512,7 +545,7 @@ public class GoogleBillingUtil {
 
     /**
      * 设置是否自动消耗内购商品
-     * @param isAutoConsumeAsync
+     * @param isAutoConsumeAsync 自动消耗内购商品
      */
     public static void setIsAutoConsumeAsync(boolean isAutoConsumeAsync) {
         GoogleBillingUtil.isAutoConsumeAsync= isAutoConsumeAsync;
@@ -538,7 +571,8 @@ public class GoogleBillingUtil {
     //endregion
 
     public GoogleBillingUtil addOnGoogleBillingListener(Activity activity,OnGoogleBillingListener onGoogleBillingListener){
-        onGoogleBillingListenerMap.put(activity.getLocalClassName(),onGoogleBillingListener);
+        onGoogleBillingListener.tag = getTag(activity);
+        onGoogleBillingListenerMap.put(getTag(activity),onGoogleBillingListener);
         onGoogleBillingListenerList.add(onGoogleBillingListener);
         return this;
     }
@@ -548,12 +582,13 @@ public class GoogleBillingUtil {
     }
 
     public void removeOnGoogleBillingListener(Activity activity){
-        OnGoogleBillingListener onGoogleBillingListener = onGoogleBillingListenerMap.get(activity.getLocalClassName());
+        OnGoogleBillingListener onGoogleBillingListener = onGoogleBillingListenerMap.get(getTag(activity));
         if(onGoogleBillingListener!=null){
             removeOnGoogleBillingListener(onGoogleBillingListener);
-            onGoogleBillingListenerMap.remove(activity.getLocalClassName());
+            onGoogleBillingListenerMap.remove(getTag(activity));
         }
     }
+
 
     /**
      * 清除内购监听器，防止内存泄漏-在Activity-onDestroy里面调用。
@@ -571,6 +606,9 @@ public class GoogleBillingUtil {
      */
     private class MyPurchasesUpdatedListener implements PurchasesUpdatedListener
     {
+
+        public String tag ;
+
         @Override
         public void onPurchasesUpdated(int responseCode, @Nullable List<Purchase> list) {
             if(responseCode== BillingClient.BillingResponse.OK&&list!=null)
@@ -588,14 +626,14 @@ public class GoogleBillingUtil {
                             {
                                 if(skuType.equals(BillingClient.SkuType.INAPP))
                                 {
-                                    consumeAsync(purchase.getPurchaseToken());
+                                    consumeAsync(tag,purchase.getPurchaseToken());
                                 }
                             }
                         }
                     }
                 }
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                    listener.onPurchaseSuccess(list);
+                    listener.onPurchaseSuccess(list,listener.tag.equals(tag));
                 }
             }
             else
@@ -604,7 +642,7 @@ public class GoogleBillingUtil {
                     log("购买失败,responseCode:"+responseCode);
                 }
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                    listener.onFail(GoogleBillingListenerTag.PURCHASE,responseCode);
+                    listener.onFail(GoogleBillingListenerTag.PURCHASE,responseCode,listener.tag.equals(tag));
                 }
             }
         }
@@ -616,9 +654,11 @@ public class GoogleBillingUtil {
     private class MySkuDetailsResponseListener implements SkuDetailsResponseListener
     {
         private String skuType ;
+        private String tag;
 
-        public MySkuDetailsResponseListener(String skuType) {
+        public MySkuDetailsResponseListener(String skuType,String tag) {
             this.skuType = skuType;
+            this.tag = tag;
         }
 
         @Override
@@ -626,13 +666,13 @@ public class GoogleBillingUtil {
             if(responseCode== BillingClient.BillingResponse.OK&&list!=null)
             {
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                    listener.onQuerySuccess(skuType,list);
+                    listener.onQuerySuccess(skuType,list,listener.tag.equals(tag));
                 }
             }
             else
             {
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                    listener.onFail(GoogleBillingListenerTag.QUERY,responseCode);
+                    listener.onFail(GoogleBillingListenerTag.QUERY,responseCode,listener.tag.equals(tag));
                 }
             }
         }
@@ -644,15 +684,21 @@ public class GoogleBillingUtil {
      */
     private class MyConsumeResponseListener implements ConsumeResponseListener
     {
+        private String tag ;
+
+        public MyConsumeResponseListener(String tag) {
+            this.tag = tag;
+        }
+
         @Override
         public void onConsumeResponse(int responseCode, String purchaseToken) {
             if (responseCode == BillingClient.BillingResponse.OK) {
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                    listener.onConsumeSuccess(purchaseToken);
+                    listener.onConsumeSuccess(purchaseToken,listener.tag.equals(tag));
                 }
             }else{
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                    listener.onFail(GoogleBillingListenerTag.COMSUME,responseCode);
+                    listener.onFail(GoogleBillingListenerTag.COMSUME,responseCode,listener.tag.equals(tag));
                 }
             }
         }
@@ -669,52 +715,6 @@ public class GoogleBillingUtil {
         GoogleBillingListenerTag(String tag){
             this.tag = tag;
         }
-    }
-
-    public interface OnGoogleBillingListener{
-
-        /**
-         * 查询成功
-         * @param skuType
-         * @param list
-         */
-        public default void onQuerySuccess(@NonNull String skuType,@NonNull List<SkuDetails> list){}
-
-        /**
-         * 购买成功
-         * @param list
-         */
-        public default void onPurchaseSuccess(@NonNull List<Purchase> list){}
-
-        /**
-         * 初始化成功
-         */
-        public default void onSetupSuccess(){}
-
-        /**
-         * 链接断开
-         */
-        public default void onBillingServiceDisconnected(){ }
-
-        /**
-         * 消耗成功
-         * @param purchaseToken
-         */
-        public default void onConsumeSuccess(@NonNull String purchaseToken){}
-
-        /**
-         * 失败回调
-         * @param tag @
-         * @param responseCode
-         */
-        public default void onFail(@NonNull GoogleBillingListenerTag tag,int responseCode){}
-
-        /**
-         * google组件初始化失败等等。
-         * @param tag
-         */
-        public default void onError(@NonNull GoogleBillingListenerTag tag){}
-
     }
 
     private static void log(String msg)

@@ -7,6 +7,7 @@ import android.widget.Toast
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.SkuDetails
 import com.tjbaobao.gitee.billing.GoogleBillingUtil
+import com.tjbaobao.gitee.billing.OnGoogleBillingListener
 import kotlinx.android.synthetic.main.next_activity_layout.*
 
 
@@ -32,7 +33,7 @@ class NextActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.next_activity_layout)
         googleBillingUtil = GoogleBillingUtil.getInstance()
-            .addOnGoogleBillingListener(this,OnGoogleBillingListener())
+            .addOnGoogleBillingListener(this, OnMyGoogleBillingListener())
             .build(this)
         tvBack.setOnClickListener {
             this.finish()
@@ -45,9 +46,9 @@ class NextActivity : AppCompatActivity() {
         }
     }
 
-    private inner class OnGoogleBillingListener : GoogleBillingUtil.OnGoogleBillingListener{
+    private inner class OnMyGoogleBillingListener : OnGoogleBillingListener(){
 
-        override fun onQuerySuccess(skuType: String, list: MutableList<SkuDetails>) {
+        override fun onQuerySuccess(skuType: String, list: MutableList<SkuDetails>,isSelf:Boolean) {
             if(skuType==GoogleBillingUtil.BILLING_TYPE_INAPP){
                 //内购商品
                 if(list.size>0){
@@ -61,7 +62,7 @@ class NextActivity : AppCompatActivity() {
             }
         }
 
-        override fun onPurchaseSuccess(list: MutableList<Purchase>) {
+        override fun onPurchaseSuccess(list: MutableList<Purchase>,isSelf:Boolean) {
             for(purchase in list){
                 val sku = purchase.sku
                 val skuType = googleBillingUtil.getSkuType(sku)
