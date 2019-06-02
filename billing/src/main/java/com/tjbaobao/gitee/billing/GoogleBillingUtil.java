@@ -634,6 +634,14 @@ public class GoogleBillingUtil {
     }
 
     /**
+     * 设置是否自动确认购买
+     * @param isAutoAcknowledgePurchase boolean
+     */
+    public static void setIsAutoAcknowledgePurchase(boolean isAutoAcknowledgePurchase){
+        GoogleBillingUtil.isAutoAcknowledgePurchase = isAutoAcknowledgePurchase;
+    }
+
+    /**
      * 断开连接google服务
      * 注意！！！一般情况不建议调用该方法，让google保留连接是最好的选择。
      */
