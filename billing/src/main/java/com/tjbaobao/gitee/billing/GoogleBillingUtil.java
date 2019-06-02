@@ -768,6 +768,9 @@ public class GoogleBillingUtil {
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
                     listener.onFail(GoogleBillingListenerTag.QUERY,billingResult.getResponseCode(),listener.tag.equals(tag));
                 }
+                if(IS_DEBUG){
+                    log("查询失败,responseCode:"+billingResult.getResponseCode()+",msg:"+billingResult.getDebugMessage());
+                }
             }
         }
 
@@ -794,6 +797,9 @@ public class GoogleBillingUtil {
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
                     listener.onFail(GoogleBillingListenerTag.COMSUME,billingResult.getResponseCode(),listener.tag.equals(tag));
                 }
+                if(IS_DEBUG){
+                    log("消耗失败,responseCode:"+billingResult.getResponseCode()+",msg:"+billingResult.getDebugMessage());
+                }
             }
         }
     }
@@ -818,6 +824,9 @@ public class GoogleBillingUtil {
             }else{
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
                     listener.onFail(GoogleBillingListenerTag.AcKnowledgePurchase,billingResult.getResponseCode(),listener.tag.equals(tag));
+                }
+                if(IS_DEBUG){
+                    log("确认购买失败,responseCode:"+billingResult.getResponseCode()+",msg:"+billingResult.getDebugMessage());
                 }
             }
         }
