@@ -1,6 +1,7 @@
 package com.tjbaobao.gitee.billing;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.SkuDetails;
 
@@ -50,6 +51,13 @@ public class OnGoogleBillingListener {
      * @param isSelf 是否是当前页面的结果
      */
     public void onConsumeSuccess(@NonNull String purchaseToken,boolean isSelf){}
+
+
+    /**
+     * 确认购买成功
+     * @param isSelf 是否是当前页面的结果
+     */
+    public void onAcknowledgePurchaseSuccess(boolean isSelf){}
 
     /**
      * 失败回调

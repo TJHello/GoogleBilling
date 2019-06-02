@@ -86,6 +86,10 @@ class MainActivity : AppCompatActivity() {
             log("消耗商品成功:$purchaseToken")
         }
 
+        override fun onAcknowledgePurchaseSuccess(isSelf: Boolean) {
+            log("确认购买商品成功")
+        }
+
         override fun onFail(tag: GoogleBillingUtil.GoogleBillingListenerTag, responseCode: Int,isSelf: Boolean) {
             log("操作失败:tag=${tag.name},responseCode=$responseCode")
         }

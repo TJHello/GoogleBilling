@@ -33,6 +33,7 @@ public class GoogleBillingUtil {
     private MyPurchasesUpdatedListener purchasesUpdatedListener = new MyPurchasesUpdatedListener();
 
     private static boolean isAutoConsumeAsync = true;//是否在购买成功后自动消耗商品
+    private static boolean isAutoAcknowledgePurchase = true;//是否在购买成功后自动消耗商品
 
     private static final GoogleBillingUtil mGoogleBillingUtil = new GoogleBillingUtil() ;
 
@@ -76,7 +77,9 @@ public class GoogleBillingUtil {
                 if(mBillingClient==null)
                 {
                     builder = BillingClient.newBuilder(activity);
-                    mBillingClient = builder.setListener(purchasesUpdatedListener).build();
+                    mBillingClient = builder.setListener(purchasesUpdatedListener)
+                            .enablePendingPurchases()
+                            .build();
                 }
                 else
                 {
@@ -114,9 +117,10 @@ public class GoogleBillingUtil {
         if(!mBillingClient.isReady())
         {
             mBillingClient.startConnection(new BillingClientStateListener() {
+
                 @Override
-                public void onBillingSetupFinished(@BillingClient.BillingResponse int billingResponseCode) {
-                    if (billingResponseCode == BillingClient.BillingResponse.OK) {
+                public void onBillingSetupFinished(BillingResult billingResult) {
+                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                         queryInventoryInApp(tag);
                         queryInventorySubs(tag);
                         queryPurchasesInApp(tag);
@@ -126,12 +130,13 @@ public class GoogleBillingUtil {
                     }
                     else
                     {
-                        log("初始化失败:onSetupFail:code="+billingResponseCode);
+                        log("初始化失败:onSetupFail:code="+billingResult.getResponseCode());
                         for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                            listener.onFail(GoogleBillingListenerTag.SETUP,billingResponseCode, listener.tag.equals(tag));
+                            listener.onFail(GoogleBillingListenerTag.SETUP,billingResult.getResponseCode(), listener.tag.equals(tag));
                         }
                     }
                 }
+
                 @Override
                 public void onBillingServiceDisconnected() {
                     for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
@@ -268,6 +273,7 @@ public class GoogleBillingUtil {
      * 消耗商品
      * @param purchaseToken {@link Purchase#getPurchaseToken()}
      */
+
     public void consumeAsync(Activity activity,String purchaseToken)
     {
         consumeAsync(getTag(activity),purchaseToken);
@@ -283,7 +289,10 @@ public class GoogleBillingUtil {
         {
             return ;
         }
-        mBillingClient.consumeAsync(purchaseToken, new MyConsumeResponseListener(tag));
+        ConsumeParams consumeParams = ConsumeParams.newBuilder()
+                .setPurchaseToken(purchaseToken)
+                .build();
+        mBillingClient.consumeAsync(consumeParams,new MyConsumeResponseListener(tag));
     }
 
     /**
@@ -312,13 +321,32 @@ public class GoogleBillingUtil {
         if(purchaseList!=null){
             for(Purchase purchase : purchaseList){
                 if(skuList.contains(purchase.getSku())){
-                    mBillingClient.consumeAsync(purchase.getPurchaseToken(), new MyConsumeResponseListener(getTag(activity)));
+                    consumeAsync(activity,purchase.getPurchaseToken());
                 }
             }
         }
     }
 
-    //endregion    
+    //endregion
+
+    //region===================================确认购买=================================
+
+    public void acknowledgePurchase(Activity activity,String purchaseToken){
+
+    }
+
+    private void acknowledgePurchase(String tag,String purchaseToken){
+        if(mBillingClient==null)
+        {
+            return ;
+        }
+        AcknowledgePurchaseParams params = AcknowledgePurchaseParams.newBuilder()
+                .setPurchaseToken(purchaseToken)
+                .build();
+        mBillingClient.acknowledgePurchase(params,new MyAcknowledgePurchaseResponseListener(tag));
+    }
+
+    //endregion
 
     //region===================================本地订单查询=================================
     /**
@@ -359,26 +387,37 @@ public class GoogleBillingUtil {
             Purchase.PurchasesResult purchasesResult = mBillingClient.queryPurchases(skuType);
             if(purchasesResult!=null)
             {
-                if(purchasesResult.getResponseCode()== BillingClient.BillingResponse.OK)
+                if(purchasesResult.getResponseCode()== BillingClient.BillingResponseCode.OK)
                 {
                     List<Purchase> purchaseList =  purchasesResult.getPurchasesList();
-                    if(isAutoConsumeAsync)
+                    if(purchaseList!=null)
                     {
-                        if(purchaseList!=null)
+                        for(Purchase purchase:purchaseList)
                         {
-                            for(Purchase purchase:purchaseList)
-                            {
+                            if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
                                 if(skuType.equals(BillingClient.SkuType.INAPP))
                                 {
-                                    consumeAsync(tag,purchase.getPurchaseToken());
+                                    if(isAutoConsumeAsync) {
+                                        consumeAsync(tag,purchase.getPurchaseToken());
+                                    }else if(isAutoAcknowledgePurchase){
+                                        if(!purchase.isAcknowledged()){
+                                            acknowledgePurchase(tag,purchase.getPurchaseToken());
+                                        }
+                                    }
+                                }else if(skuType.equals(BillingClient.SkuType.SUBS)){
+                                    if(isAutoAcknowledgePurchase){
+                                        if(!purchase.isAcknowledged()){
+                                            acknowledgePurchase(tag,purchase.getPurchaseToken());
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
+
                     return purchaseList;
                 }
             }
-
         }
         return null;
     }
@@ -389,24 +428,27 @@ public class GoogleBillingUtil {
     /**
      * 异步联网查询所有的内购历史-无论是过期的、取消、等等的订单
      * @param listener 监听器
+     * @return 返回false的时候说明网络出错
      */
-    public void queryPurchaseHistoryAsyncInApp(PurchaseHistoryResponseListener listener){
+    public boolean queryPurchaseHistoryAsyncInApp(PurchaseHistoryResponseListener listener){
         if(isReady()) {
             mBillingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.INAPP,listener);
-        } else{
-            listener.onPurchaseHistoryResponse(BillingClient.BillingResponse.SERVICE_DISCONNECTED,null);
+            return true;
         }
+        return false;
     }
 
     /**
      * 异步联网查询所有的订阅历史-无论是过期的、取消、等等的订单
      * @param listener 监听器
+     * @return 返回false的时候说明网络出错
      */
-    public void queryPurchaseHistoryAsyncSubs(PurchaseHistoryResponseListener listener){
+    public boolean queryPurchaseHistoryAsyncSubs(PurchaseHistoryResponseListener listener){
         if(isReady()) {
             mBillingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.SUBS,listener);
+            return true;
         }else{
-            listener.onPurchaseHistoryResponse(BillingClient.BillingResponse.SERVICE_DISCONNECTED,null);
+            return false;
         }
     }
 
@@ -619,23 +661,34 @@ public class GoogleBillingUtil {
         public String tag ;
 
         @Override
-        public void onPurchasesUpdated(int responseCode, @Nullable List<Purchase> list) {
-            if(responseCode== BillingClient.BillingResponse.OK&&list!=null)
+        public void onPurchasesUpdated(BillingResult billingResult, @Nullable List<Purchase> list) {
+            if(billingResult.getResponseCode()== BillingClient.BillingResponseCode.OK&&list!=null)
             {
-                if(isAutoConsumeAsync)
+                //消耗商品
+                for(Purchase purchase:list)
                 {
-                    //消耗商品
-                    for(Purchase purchase:list)
-                    {
+                    if(purchase.getPurchaseState()== Purchase.PurchaseState.PURCHASED){
+                        //已购买
                         String sku = purchase.getSku();
-                        if(sku!=null)
+                        String skuType = getSkuType(sku);
+                        if(skuType!=null)
                         {
-                            String skuType = getSkuType(sku);
-                            if(skuType!=null)
+                            if(skuType.equals(BillingClient.SkuType.INAPP))
                             {
-                                if(skuType.equals(BillingClient.SkuType.INAPP))
-                                {
+                                if(isAutoConsumeAsync) {
                                     consumeAsync(tag,purchase.getPurchaseToken());
+                                }else if(isAutoAcknowledgePurchase){
+                                    if(!purchase.isAcknowledged()){
+                                        acknowledgePurchase(tag,purchase.getPurchaseToken());
+                                    }
+                                }
+                            }
+                            else if(skuType.equals(BillingClient.SkuType.SUBS))
+                            {
+                                if(isAutoAcknowledgePurchase){
+                                    if(!purchase.isAcknowledged()){
+                                        acknowledgePurchase(tag,purchase.getPurchaseToken());
+                                    }
                                 }
                             }
                         }
@@ -648,13 +701,14 @@ public class GoogleBillingUtil {
             else
             {
                 if(IS_DEBUG){
-                    log("购买失败,responseCode:"+responseCode);
+                    log("购买失败,responseCode:"+billingResult.getResponseCode()+",msg:"+billingResult.getDebugMessage());
                 }
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                    listener.onFail(GoogleBillingListenerTag.PURCHASE,responseCode,listener.tag.equals(tag));
+                    listener.onFail(GoogleBillingListenerTag.PURCHASE,billingResult.getResponseCode(),listener.tag.equals(tag));
                 }
             }
         }
+
     }
 
     /**
@@ -671,8 +725,8 @@ public class GoogleBillingUtil {
         }
 
         @Override
-        public void onSkuDetailsResponse(int responseCode , List<SkuDetails> list) {
-            if(responseCode== BillingClient.BillingResponse.OK&&list!=null)
+        public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> list) {
+            if(billingResult.getResponseCode()== BillingClient.BillingResponseCode.OK&&list!=null)
             {
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
                     listener.onQuerySuccess(skuType,list,listener.tag.equals(tag));
@@ -681,7 +735,7 @@ public class GoogleBillingUtil {
             else
             {
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                    listener.onFail(GoogleBillingListenerTag.QUERY,responseCode,listener.tag.equals(tag));
+                    listener.onFail(GoogleBillingListenerTag.QUERY,billingResult.getResponseCode(),listener.tag.equals(tag));
                 }
             }
         }
@@ -700,14 +754,39 @@ public class GoogleBillingUtil {
         }
 
         @Override
-        public void onConsumeResponse(int responseCode, String purchaseToken) {
-            if (responseCode == BillingClient.BillingResponse.OK) {
+        public void onConsumeResponse(BillingResult billingResult, String purchaseToken) {
+            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
                     listener.onConsumeSuccess(purchaseToken,listener.tag.equals(tag));
                 }
             }else{
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                    listener.onFail(GoogleBillingListenerTag.COMSUME,responseCode,listener.tag.equals(tag));
+                    listener.onFail(GoogleBillingListenerTag.COMSUME,billingResult.getResponseCode(),listener.tag.equals(tag));
+                }
+            }
+        }
+    }
+
+    /**
+     * Googlg消耗商品回调
+     */
+    private class MyAcknowledgePurchaseResponseListener implements AcknowledgePurchaseResponseListener{
+
+        private String tag ;
+
+        public MyAcknowledgePurchaseResponseListener(String tag) {
+            this.tag = tag;
+        }
+
+        @Override
+        public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
+            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                    listener.onAcknowledgePurchaseSuccess(listener.tag.equals(tag));
+                }
+            }else{
+                for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                    listener.onFail(GoogleBillingListenerTag.AcKnowledgePurchase,billingResult.getResponseCode(),listener.tag.equals(tag));
                 }
             }
         }
@@ -718,7 +797,8 @@ public class GoogleBillingUtil {
         QUERY("query"),
         PURCHASE("purchase"),
         SETUP("setup"),
-        COMSUME("comsume")
+        COMSUME("comsume"),
+        AcKnowledgePurchase("AcKnowledgePurchase"),
         ;
         public String tag ;
         GoogleBillingListenerTag(String tag){
