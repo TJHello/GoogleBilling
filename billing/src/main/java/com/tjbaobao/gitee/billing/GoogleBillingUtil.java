@@ -269,21 +269,32 @@ public class GoogleBillingUtil {
     //endregion
 
     //region===================================消耗商品=================================
+
     /**
      * 消耗商品
      * @param purchaseToken {@link Purchase#getPurchaseToken()}
      */
-
     public void consumeAsync(Activity activity,String purchaseToken)
     {
-        consumeAsync(getTag(activity),purchaseToken);
+        consumeAsync(getTag(activity),purchaseToken,null);
+    }
+
+
+    public void consumeAsync(Activity activity,String purchaseToken,@Nullable String developerPayload)
+    {
+        consumeAsync(getTag(activity),purchaseToken,developerPayload);
     }
 
     /**
      * 消耗商品
      * @param purchaseToken {@link Purchase#getPurchaseToken()}
      */
-    private void consumeAsync(String tag,String purchaseToken)
+    private void consumeAsync(String tag,String purchaseToken){
+        consumeAsync(tag,purchaseToken,null);
+    }
+
+
+    private void consumeAsync(String tag,String purchaseToken,@Nullable String developerPayload)
     {
         if(mBillingClient==null)
         {
@@ -291,6 +302,7 @@ public class GoogleBillingUtil {
         }
         ConsumeParams consumeParams = ConsumeParams.newBuilder()
                 .setPurchaseToken(purchaseToken)
+                .setDeveloperPayload(developerPayload)
                 .build();
         mBillingClient.consumeAsync(consumeParams,new MyConsumeResponseListener(tag));
     }
@@ -305,14 +317,14 @@ public class GoogleBillingUtil {
             return ;
         }
         List<String> skuList = Arrays.asList(sku);
-        consumeAsyncInApp(activity,skuList);
+        consumeAsyncInApp(activity,skuList,null);
     }
 
     /**
      * 消耗内购商品-通过sku数组
      * @param skuList sku数组
      */
-    public void consumeAsyncInApp(Activity activity,@NonNull List<String> skuList)
+    public void consumeAsyncInApp(Activity activity,@NonNull List<String> skuList,@Nullable List<String> developerPayloadList)
     {
         if(mBillingClient==null) {
             return ;
@@ -320,8 +332,13 @@ public class GoogleBillingUtil {
         List<Purchase> purchaseList = queryPurchasesInApp(activity);
         if(purchaseList!=null){
             for(Purchase purchase : purchaseList){
-                if(skuList.contains(purchase.getSku())){
-                    consumeAsync(activity,purchase.getPurchaseToken());
+                int index = skuList.indexOf(purchase.getSku());
+                if(index!=-1){
+                    if(developerPayloadList!=null&&index<developerPayloadList.size()){
+                        consumeAsync(activity,purchase.getPurchaseToken(),developerPayloadList.get(index));
+                    }else{
+                        consumeAsync(activity,purchase.getPurchaseToken(),null);
+                    }
                 }
             }
         }
@@ -331,17 +348,31 @@ public class GoogleBillingUtil {
 
     //region===================================确认购买=================================
 
+    /**
+     * 确认购买
+     * @param activity activity
+     * @param purchaseToken token
+     */
     public void acknowledgePurchase(Activity activity,String purchaseToken){
+        acknowledgePurchase(activity,purchaseToken,null);
+    }
 
+    public void acknowledgePurchase(Activity activity,String purchaseToken,@Nullable String developerPayload){
+        acknowledgePurchase(getTag(activity),purchaseToken,developerPayload);
     }
 
     private void acknowledgePurchase(String tag,String purchaseToken){
+        acknowledgePurchase(tag,purchaseToken,null);
+    }
+
+    private void acknowledgePurchase(String tag,String purchaseToken,@Nullable String developerPayload){
         if(mBillingClient==null)
         {
             return ;
         }
         AcknowledgePurchaseParams params = AcknowledgePurchaseParams.newBuilder()
                 .setPurchaseToken(purchaseToken)
+                .setDeveloperPayload(developerPayload)
                 .build();
         mBillingClient.acknowledgePurchase(params,new MyAcknowledgePurchaseResponseListener(tag));
     }
