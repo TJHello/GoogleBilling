@@ -1,7 +1,16 @@
-# GoogleBilling 1.2.1 [![](https://jitpack.io/v/com.gitee.tjbaobao/GoogleBilling.svg)](https://jitpack.io/#com.gitee.tjbaobao/GoogleBilling)
+# GoogleBilling 2.0.0 [![](https://jitpack.io/v/com.gitee.tjbaobao/GoogleBilling.svg)](https://jitpack.io/#com.gitee.tjbaobao/GoogleBilling)
 
-#### 基于com.android.billingclient:billing:1.2，对整个支付流程进行封装。
+#### 基于com.android.billingclient:billing:2.0.0，对整个支付流程进行封装。
 ##### QQ群交流：425219113(计算机语言交流)
+
+#### 2.0.0新特性[(官方说明)](http://https://developer.android.com/google/play/billing/billing_library_releases_notes?hl=zh-cn)
+
+- 增加"确认购买"概念，每个新购买的商品都需要调用acknowledgePurchase方法来进行确认购买，如果没有进行确认购买，三天后会遭受系统自动退款。
+- 强制删除BillingFlowParams.setSku（）方法，改为使用BillingClient.querySkuDetailsAsync()+BillingFlowParams.Builder.setSkuDetails()来配置发起购买的参数。
+- 消耗商品和确认购买配置添加setDeveloperPayload()方法，可以将一个字符串传递给google，然后可以在查询商品记录里面获得该值。（目前没在发起购买里看到这个方法，具体试用场景还不是很明确）
+- 增加"待交易"概念，购买商品回调里面，我们需要通过getPurchaseState方法来判断商品当前的状态。
+- 其他一些api修改，问题不大。不过一些开发者测试之类的功能应该很有用，但我没有具体去看。
+
 
 <img src="https://images.gitee.com/uploads/images/2019/0602/144013_b5f39e6b_927162.png"  width="216" height="384">
 <img src="https://images.gitee.com/uploads/images/2019/0602/144525_18b8420b_927162.png"  width="216" height="384">
@@ -26,7 +35,7 @@ android {
     }
 }
 dependencies {
-    implementation 'com.gitee.tjbaobao:GoogleBilling:1.2.1-alpha10'
+    implementation 'com.gitee.tjbaobao:GoogleBilling:2.0.0-alpha03'
 }
 
 
@@ -94,3 +103,7 @@ public void purchaseSubs(Activity activity,String skuId) //发起订阅
 ---
 ### =================API说明=================
 
+2.0.0版本新增
+
+- public static void setIsAutoAcknowledgePurchase(boolean isAutoAcknowledgePurchase) //设置是否自动确认购买
+- public void acknowledgePurchase(Activity activity,String purchaseToken)//确认购买
