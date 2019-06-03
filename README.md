@@ -51,6 +51,7 @@ dependencies {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         GoogleBillingUtil.isDebug(true)
+        //设置商品id，如没有，则传入null，可全局灵活配合查询商品进行使用。
         GoogleBillingUtil.setSkus(arrayOf("inappSku"), arrayOf("subsSku"))
         googleBillingUtil = GoogleBillingUtil.getInstance()
             .addOnGoogleBillingListener(this,OnGoogleBillingListener())
@@ -60,7 +61,7 @@ dependencies {
     /**
      * 使用了JAVA8特性，可以选择性实现自己想要的方法。
      */
-    private inner class OnGoogleBillingListener : GoogleBillingUtil.OnGoogleBillingListener{
+    private inner class OnGoogleBillingListener : OnGoogleBillingListener{
         //内购服务初始化成功
         override fun onSetupSuccess() {
             
