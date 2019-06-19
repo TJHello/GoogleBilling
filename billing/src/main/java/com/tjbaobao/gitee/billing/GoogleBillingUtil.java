@@ -51,12 +51,10 @@ public class GoogleBillingUtil {
      */
     public static void setSkus(@Nullable String[] inAppSKUS,@Nullable String[] subsSKUS){
         if(inAppSKUS!=null){
-            GoogleBillingUtil.inAppSKUS = new String[inAppSKUS.length];
-            copyToArray(GoogleBillingUtil.inAppSKUS,inAppSKUS);
+            GoogleBillingUtil.inAppSKUS = Arrays.copyOf(inAppSKUS,inAppSKUS.length);
         }
         if(subsSKUS!=null){
-            GoogleBillingUtil.subsSKUS = new String[subsSKUS.length];
-            copyToArray(GoogleBillingUtil.subsSKUS,subsSKUS);
+            GoogleBillingUtil.subsSKUS = Arrays.copyOf(subsSKUS,subsSKUS.length);
         }
     }
 
