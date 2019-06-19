@@ -7,20 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
 
-    signingConfigs {
-        config {
-            keyAlias 'com.diamond.art.color.by.number'
-            keyPassword 'MC04eG9GJTykJA1z'
-            storeFile file('D:\\Android\\appkey\\com.diamond.art.color.by.number\\com.diamond.art.color.by.number\\keystore.jks')
-            storePassword 'MC04eG9GJTykJA1z'
-        }
-        config_google_billing {
-            keyAlias 'no.diamond'
-            keyPassword 'sSlnkKiFubs3eg4E'
-            storeFile file('D:\\Android\\appkey\\com.colors.by.number.no.diamond\\com.colors.by.number.no.diamond\\keystore.jks')
-            storePassword 'sSlnkKiFubs3eg4E'
-        }
-    }
+
 
     compileSdkVersion 28
     defaultConfig {
@@ -38,7 +25,7 @@ android {
         }
 
         debug {
-            signingConfig signingConfigs.config_google_billing
+//            signingConfig signingConfigs.config_google_billing
         }
     }
 
