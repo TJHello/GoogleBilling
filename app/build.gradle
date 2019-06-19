@@ -7,19 +7,38 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
 
+    signingConfigs {
+        config {
+            keyAlias 'com.diamond.art.color.by.number'
+            keyPassword 'MC04eG9GJTykJA1z'
+            storeFile file('D:\\Android\\appkey\\com.diamond.art.color.by.number\\com.diamond.art.color.by.number\\keystore.jks')
+            storePassword 'MC04eG9GJTykJA1z'
+        }
+        config_google_billing {
+            keyAlias 'no.diamond'
+            keyPassword 'sSlnkKiFubs3eg4E'
+            storeFile file('D:\\Android\\appkey\\com.colors.by.number.no.diamond\\com.colors.by.number.no.diamond\\keystore.jks')
+            storePassword 'sSlnkKiFubs3eg4E'
+        }
+    }
+
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.diamond.art.color.by.number"//原包名 com.tjbaobao.gitee.googlebillingutil
+        applicationId "com.colors.by.number.no.diamond"//原包名 com.tjbaobao.gitee.googlebillingutil
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 20//1.0.1
-        versionName "1.20"//1.0.1
+        versionCode 50//1.0.1
+        versionName "2.0.10"//1.0.1
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            signingConfig signingConfigs.config_google_billing
         }
     }
 
