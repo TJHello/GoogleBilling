@@ -50,11 +50,17 @@ public class GoogleBillingUtil {
      */
     public static void setSkus(@Nullable String[] inAppSKUS,@Nullable String[] subsSKUS){
         if(inAppSKUS!=null){
-            GoogleBillingUtil.inAppSKUS = inAppSKUS;
+            GoogleBillingUtil.inAppSKUS = new String[inAppSKUS.length];
+            copyToArray(GoogleBillingUtil.inAppSKUS,inAppSKUS);
         }
         if(subsSKUS!=null){
-            GoogleBillingUtil.subsSKUS = subsSKUS;
+            GoogleBillingUtil.subsSKUS = new String[subsSKUS.length];
+            copyToArray(GoogleBillingUtil.subsSKUS,subsSKUS);
         }
+    }
+
+    private static <T> void copyToArray(T[] base,T[] target){
+        System.arraycopy(base, 0, target, 0, base.length);
     }
 
     public static GoogleBillingUtil getInstance()
