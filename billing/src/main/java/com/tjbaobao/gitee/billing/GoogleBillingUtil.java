@@ -668,16 +668,13 @@ public class GoogleBillingUtil {
         String tag = getTag(activity);
         onGoogleBillingListener.tag = tag;
         onGoogleBillingListenerMap.put(getTag(activity),onGoogleBillingListener);
-        boolean isHas = false;
-        for(OnGoogleBillingListener listener : onGoogleBillingListenerList ){
+        for(int i=onGoogleBillingListenerList.size()-1;i>=0;i--){
+            OnGoogleBillingListener listener = onGoogleBillingListenerList.get(i);
             if(listener.tag.equals(tag)){
-                isHas = true;
-                break;
+                onGoogleBillingListenerList.remove(listener);
             }
         }
-        if(!isHas) {
-            onGoogleBillingListenerList.add(onGoogleBillingListener);
-        }
+        onGoogleBillingListenerList.add(onGoogleBillingListener);
         return this;
     }
 
