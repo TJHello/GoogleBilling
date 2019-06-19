@@ -665,9 +665,19 @@ public class GoogleBillingUtil {
     //endregion
 
     public GoogleBillingUtil addOnGoogleBillingListener(Activity activity,OnGoogleBillingListener onGoogleBillingListener){
-        onGoogleBillingListener.tag = getTag(activity);
+        String tag = getTag(activity);
+        onGoogleBillingListener.tag = tag;
         onGoogleBillingListenerMap.put(getTag(activity),onGoogleBillingListener);
-        onGoogleBillingListenerList.add(onGoogleBillingListener);
+        boolean isHas = false;
+        for(OnGoogleBillingListener listener : onGoogleBillingListenerList ){
+            if(listener.tag.equals(tag)){
+                isHas = true;
+                break;
+            }
+        }
+        if(!isHas) {
+            onGoogleBillingListenerList.add(onGoogleBillingListener);
+        }
         return this;
     }
 
@@ -676,10 +686,12 @@ public class GoogleBillingUtil {
     }
 
     public void removeOnGoogleBillingListener(Activity activity){
-        OnGoogleBillingListener onGoogleBillingListener = onGoogleBillingListenerMap.get(getTag(activity));
-        if(onGoogleBillingListener!=null){
-            removeOnGoogleBillingListener(onGoogleBillingListener);
-            onGoogleBillingListenerMap.remove(getTag(activity));
+        String tag = getTag(activity);
+        for(OnGoogleBillingListener listener : onGoogleBillingListenerList ){
+            if(listener.tag.equals(tag)){
+                removeOnGoogleBillingListener(listener);
+                onGoogleBillingListenerMap.remove(tag);
+            }
         }
     }
 
