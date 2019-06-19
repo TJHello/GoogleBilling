@@ -584,8 +584,15 @@ public class GoogleBillingUtil {
     //endregion
 
     public GoogleBillingUtil addOnGoogleBillingListener(Activity activity,OnGoogleBillingListener onGoogleBillingListener){
-        onGoogleBillingListener.tag = getTag(activity);
+        String tag = getTag(activity);
+        onGoogleBillingListener.tag = tag;
         onGoogleBillingListenerMap.put(getTag(activity),onGoogleBillingListener);
+        for(int i=onGoogleBillingListenerList.size()-1;i>=0;i--){
+            OnGoogleBillingListener listener = onGoogleBillingListenerList.get(i);
+            if(listener.tag.equals(tag)){
+                onGoogleBillingListenerList.remove(listener);
+            }
+        }
         onGoogleBillingListenerList.add(onGoogleBillingListener);
         return this;
     }
@@ -595,13 +602,14 @@ public class GoogleBillingUtil {
     }
 
     public void removeOnGoogleBillingListener(Activity activity){
-        OnGoogleBillingListener onGoogleBillingListener = onGoogleBillingListenerMap.get(getTag(activity));
-        if(onGoogleBillingListener!=null){
-            removeOnGoogleBillingListener(onGoogleBillingListener);
-            onGoogleBillingListenerMap.remove(getTag(activity));
+        String tag = getTag(activity);
+        for(OnGoogleBillingListener listener : onGoogleBillingListenerList ){
+            if(listener.tag.equals(tag)){
+                removeOnGoogleBillingListener(listener);
+                onGoogleBillingListenerMap.remove(tag);
+            }
         }
     }
-
 
     /**
      * 清除内购监听器，防止内存泄漏-在Activity-onDestroy里面调用。
