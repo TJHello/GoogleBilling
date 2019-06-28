@@ -603,7 +603,8 @@ public class GoogleBillingUtil {
 
     public void removeOnGoogleBillingListener(Activity activity){
         String tag = getTag(activity);
-        for(OnGoogleBillingListener listener : onGoogleBillingListenerList ){
+        for(int i=onGoogleBillingListenerList.size()-1;i>=0;i--){
+            OnGoogleBillingListener listener = onGoogleBillingListenerList.get(i);
             if(listener.tag.equals(tag)){
                 removeOnGoogleBillingListener(listener);
                 onGoogleBillingListenerMap.remove(tag);
