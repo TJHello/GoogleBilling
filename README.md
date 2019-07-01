@@ -1,4 +1,4 @@
-# GoogleBilling 1.2.1 [![](https://jitpack.io/v/com.gitee.tjbaobao/GoogleBilling.svg)](https://jitpack.io/#com.gitee.tjbaobao/GoogleBilling)
+# GoogleBilling 1.2.1 [![](https://jitpack.io/v/TJHello/GoogleBilling.svg)](https://jitpack.io/#TJHello/GoogleBilling)
 
 #### 基于com.android.billingclient:billing:1.2，对整个支付流程进行封装。
 ##### QQ群交流：425219113(计算机语言交流)
@@ -27,7 +27,7 @@ android {
     }
 }
 dependencies {
-    implementation 'com.gitee.tjbaobao:GoogleBilling:1.2.1-alpha12'
+    implementation 'com.gitee.tjbaobao:GoogleBilling:1.2.1-beta02'
 }
 
 
