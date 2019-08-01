@@ -177,7 +177,7 @@ public class GoogleBillingUtil {
         queryInventory(getTag(activity),BillingClient.SkuType.SUBS);
     }
 
-    public void queryInventorySubs(String tag)
+    private void queryInventorySubs(String tag)
     {
         queryInventory(tag,BillingClient.SkuType.SUBS);
     }
