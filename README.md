@@ -120,3 +120,126 @@ setSkus的时候将内购sku和订阅sku的参数顺序弄错了，应该是第�
 ---
 ### =================API说明=================
 
+1. 初始化google应用内购买服务
+
+```java
+//设置内购id和订阅id，用于自动查询等
+public static void setSkus(@Nullable String[] inAppSKUS,@Nullable String[] subsSKUS)
+
+//获取单例，全局通用
+public static GoogleBillingUtil getInstance()
+
+//初始化服务，建立连接，全局通用
+public GoogleBillingUtil build
+
+//建立连接，build中已经包含，用于特殊用户自定义重连机制
+public boolean startConnection(Activity activity)
+
+```
+
+2. 查询商品
+
+```
+//查询内购商品信息(价格等信息)
+public void queryInventoryInApp(Activity activity)
+
+//查询订阅商品信息(价格等信息)
+public void queryInventorySubs(Activity activity)
+
+```
+
+3. 购买商品
+
+```
+
+//发起内购
+public void purchaseInApp(Activity activity, String skuId)
+
+//发起订阅
+public void purchaseSubs(Activity activity,String skuId)
+
+```
+4. 消耗商品
+
+```
+//消耗商品，通过purchaseToken
+public void consumeAsync(Activity activity,String purchaseToken)
+
+//消耗商品，通过sku数组
+public void consumeAsyncInApp(Activity activity,@NonNull String... sku)
+
+//消耗商品，通过sku列表
+public void consumeAsyncInApp(Activity activity,@NonNull List<String> skuList)
+
+```
+5. 本地订单查询(查询GP本地缓存，不具备高实时性)
+
+```
+//取已经内购的商品
+public List<Purchase> queryPurchasesInApp(Activity activity)
+
+//获取已经订阅的商品
+public List<Purchase> queryPurchasesSubs(Activity activity)
+
+```
+6. 在线订单查询(联网存，具备高实时性，但查到的是所有订单)
+
+```
+//异步联网查询所有的内购历史-无论是过期的、取消、等等的订单
+public void queryPurchaseHistoryAsyncInApp(PurchaseHistoryResponseListener listener)
+
+//异步联网查询所有的订阅历史-无论是过期的、取消、等等的订单
+public void queryPurchaseHistoryAsyncSubs(PurchaseHistoryResponseListener listener)
+
+```
+7. 工具集合
+
+```
+//获取有效订阅的数量
+public int getPurchasesSizeSubs(Activity activity)
+
+//通过sku获取内购商品序号
+public int getInAppPositionBySku(String sku)
+
+//通过sku获取订阅商品序号
+public int getSubsPositionBySku(String sku)
+
+//通过序号获取订阅sku
+public String getSubsSkuByPosition(int position)
+
+//通过序号获取内购sku
+public String getInAppSkuByPosition(int position)
+
+//通过sku获取商品类型
+public String getSkuType(String sku)
+
+```
+8. 其他方法
+
+```
+//google内购服务是否已经准备好
+public static boolean isReady()
+
+//设置是否自动消耗内购商品
+public static void setIsAutoConsumeAsync(boolean isAutoConsumeAsync)
+
+//断开连接google服务(不要频繁使用)
+public static void endConnection()
+
+```
+9. 监听器相关
+
+```
+//添加监听器
+public GoogleBillingUtil addOnGoogleBillingListener(Activity activity,OnGoogleBillingListener onGoogleBillingListener)
+
+//移除监听器
+public void removeOnGoogleBillingListener(OnGoogleBillingListener onGoogleBillingListener)
+
+//移除某个页面的所有监听器
+public void removeOnGoogleBillingListener(Activity activity)
+
+//清除内购监听器，防止内存泄漏-在Activity-onDestroy里面调用。
+public void onDestroy(Activity activity)
+
+```
