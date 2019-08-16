@@ -200,9 +200,11 @@ public class GoogleBillingUtil {
             {
                 Collections.addAll(skuList, subsSKUS);
             }
-            SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-            params.setSkusList(skuList).setType(skuType);
-            mBillingClient.querySkuDetailsAsync(params.build(),new MySkuDetailsResponseListener(skuType,tag));
+            if(!skuList.isEmpty()){
+                SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
+                params.setSkusList(skuList).setType(skuType);
+                mBillingClient.querySkuDetailsAsync(params.build(),new MySkuDetailsResponseListener(skuType,tag));
+            }
         };
         executeServiceRequest(tag,runnable);
     }
