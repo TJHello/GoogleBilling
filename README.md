@@ -1,4 +1,4 @@
-# GoogleBilling 2.0.0 [![](https://jitpack.io/v/com.gitee.tjbaobao/GoogleBilling.svg)](https://jitpack.io/#com.gitee.tjbaobao/GoogleBilling)
+# GoogleBilling 2.0.0 [![](https://jitpack.io/v/TJHello/GoogleBilling.svg)](https://jitpack.io/#TJHello/GoogleBilling)
 
 #### 基于com.android.billingclient:billing:2.0.0，对整个支付流程进行封装。
 ##### QQ群交流：425219113(计算机语言交流)
@@ -35,7 +35,7 @@ android {
     }
 }
 dependencies {
-    implementation 'com.gitee.tjbaobao:GoogleBilling:2.0.0-alpha07'
+    implementation 'com.github.TJHello:GoogleBilling:2.0.0-alpha08'
 }
 
 
@@ -61,7 +61,7 @@ dependencies {
     /**
      * 使用了JAVA8特性，可以选择性实现自己想要的方法。
      */
-    private inner class OnGoogleBillingListener : OnGoogleBillingListener{
+    private inner class OnGoogleBillingListener : OnGoogleBillingListener(){
         //内购服务初始化成功
         override fun onSetupSuccess() {
             
