@@ -247,6 +247,7 @@ public class GoogleBillingUtil {
         }
         if(startConnection(tag))
         {
+            purchasesUpdatedListener.tag = tag;
             builder.setListener(purchasesUpdatedListener);
             List<String> skuList = new ArrayList<>();
             skuList.add(skuId);
