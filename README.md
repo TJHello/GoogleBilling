@@ -52,7 +52,7 @@ dependencies {
     /**
      * 使用了JAVA8特性，可以选择性实现自己想要的方法。
      */
-    private inner class OnGoogleBillingListener : GoogleBillingUtil.OnGoogleBillingListener{
+    private inner class OnGoogleBillingListener : GoogleBillingUtil.OnGoogleBillingListener(){
         //内购服务初始化成功
         override fun onSetupSuccess() {
             
