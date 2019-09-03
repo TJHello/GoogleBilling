@@ -62,7 +62,7 @@ class NextActivity : AppCompatActivity() {
             }
         }
 
-        override fun onPurchaseSuccess(list: MutableList<Purchase>,isSelf:Boolean) {
+        override fun onPurchaseSuccess(list: MutableList<Purchase>,isSelf:Boolean) : Boolean{
             for(purchase in list){
                 val sku = purchase.sku
                 val skuType = googleBillingUtil.getSkuType(sku)
@@ -72,6 +72,7 @@ class NextActivity : AppCompatActivity() {
                     Toast.makeText(this@NextActivity,"订阅成功:$sku",Toast.LENGTH_LONG).show()
                 }
             }
+            return false
         }
 
     }

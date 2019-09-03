@@ -29,14 +29,27 @@ public class OnGoogleBillingListener {
      * 购买成功
      * @param list 商品列表
      * @param isSelf 是否是当前页面的结果
+     * @return 是否自动消耗
      */
-    public void onPurchaseSuccess(@NonNull List<Purchase> list, boolean isSelf){}
+    public boolean onPurchaseSuccess(@NonNull List<Purchase> list, boolean isSelf){
+        return false;
+    }
 
     /**
      * 初始化成功
      * @param isSelf 是否是当前页面的结果
      */
     public void onSetupSuccess(boolean isSelf){}
+
+    /**
+     * 每次启动重新检查订单，返回有效的订单
+     * @param skuType 内购或者订阅
+     * @param list 商品列表
+     * @param isSelf 是否是当前页面的结果
+     */
+    public boolean onRecheck(@NonNull String skuType,  @NonNull List<Purchase> list, boolean isSelf){
+        return false;
+    }
 
     /**
      * 链接断开

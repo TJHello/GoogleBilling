@@ -32,8 +32,6 @@ public class GoogleBillingUtil {
     private static Map<String,OnGoogleBillingListener> onGoogleBillingListenerMap = new HashMap<>();
     private MyPurchasesUpdatedListener purchasesUpdatedListener = new MyPurchasesUpdatedListener();
 
-    private static boolean isAutoConsumeAsync = true;//是否在购买成功后自动消耗商品
-
     private static final GoogleBillingUtil mGoogleBillingUtil = new GoogleBillingUtil() ;
 
     private GoogleBillingUtil()
@@ -218,7 +216,13 @@ public class GoogleBillingUtil {
      */
     public void purchaseInApp(Activity activity, String skuId)
     {
-        purchase(activity,skuId, BillingClient.SkuType.INAPP);
+        String skuType = getSkuType(skuId);
+        if(BillingClient.SkuType.INAPP.equals(skuType)){
+            purchase(activity,skuId, BillingClient.SkuType.INAPP);
+        }else{
+            throw new IllegalArgumentException(
+                    "检测到该商品id{"+skuId+"}的类型与内购类型{"+BillingClient.SkuType.INAPP+"}不相同");
+        }
     }
 
     /**
@@ -227,7 +231,13 @@ public class GoogleBillingUtil {
      */
     public void purchaseSubs(Activity activity,String skuId)
     {
-        purchase(activity,skuId, BillingClient.SkuType.SUBS);
+        String skuType = getSkuType(skuId);
+        if(BillingClient.SkuType.SUBS.equals(skuType)){
+            purchase(activity,skuId, BillingClient.SkuType.SUBS);
+        }else{
+            throw new IllegalArgumentException(
+                    "检测到该商品id{"+skuId+"}的类型与订阅类型{"+BillingClient.SkuType.SUBS+"}不相同");
+        }
     }
 
     private void purchase(Activity activity,final String skuId,final String skuType)
@@ -368,16 +378,21 @@ public class GoogleBillingUtil {
             {
                 if(purchasesResult.getResponseCode()== BillingClient.BillingResponse.OK)
                 {
+                    boolean isConsumeAsync = true;
                     List<Purchase> purchaseList =  purchasesResult.getPurchasesList();
-                    if(isAutoConsumeAsync)
+                    if(purchaseList!=null&&!purchaseList.isEmpty())
                     {
-                        if(purchaseList!=null)
-                        {
-                            for(Purchase purchase:purchaseList)
-                            {
-                                if(skuType.equals(BillingClient.SkuType.INAPP))
+                        for(OnGoogleBillingListener listener : onGoogleBillingListenerList) {
+                            boolean isSelf = listener.tag.equals(tag);//是否是当前页面
+                            boolean isSuccess = listener.onRecheck(skuType, purchaseList, isSelf);
+                            if (isSuccess && isConsumeAsync) {
+                                for(Purchase purchase:purchaseList)
                                 {
-                                    consumeAsync(tag,purchase.getPurchaseToken());
+                                    if(skuType.equals(BillingClient.SkuType.INAPP))
+                                    {
+                                        isConsumeAsync = false;
+                                        consumeAsync(tag,purchase.getPurchaseToken());
+                                    }
                                 }
                             }
                         }
@@ -560,14 +575,6 @@ public class GoogleBillingUtil {
     }
 
     /**
-     * 设置是否自动消耗内购商品
-     * @param isAutoConsumeAsync 自动消耗内购商品
-     */
-    public static void setIsAutoConsumeAsync(boolean isAutoConsumeAsync) {
-        GoogleBillingUtil.isAutoConsumeAsync= isAutoConsumeAsync;
-    }
-
-    /**
      * 断开连接google服务
      * 注意！！！一般情况不建议调用该方法，让google保留连接是最好的选择。
      */
@@ -638,27 +645,29 @@ public class GoogleBillingUtil {
         public void onPurchasesUpdated(int responseCode, @Nullable List<Purchase> list) {
             if(responseCode== BillingClient.BillingResponse.OK&&list!=null)
             {
-                if(isAutoConsumeAsync)
-                {
-                    //消耗商品
-                    for(Purchase purchase:list)
-                    {
-                        String sku = purchase.getSku();
-                        if(sku!=null)
+                boolean isConsumeAsync = true;
+                for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                    boolean isSelf = listener.tag.equals(tag);//是否是当前页面
+                    boolean isSuccess = listener.onPurchaseSuccess(list,isSelf);//是否允许消耗
+                    if(isSuccess&&isConsumeAsync){
+                        //消耗商品
+                        for(Purchase purchase:list)
                         {
-                            String skuType = getSkuType(sku);
-                            if(skuType!=null)
+                            String sku = purchase.getSku();
+                            if(sku!=null)
                             {
-                                if(skuType.equals(BillingClient.SkuType.INAPP))
+                                String skuType = getSkuType(sku);
+                                if(skuType!=null)
                                 {
-                                    consumeAsync(tag,purchase.getPurchaseToken());
+                                    if(skuType.equals(BillingClient.SkuType.INAPP))
+                                    {
+                                        isConsumeAsync = false;
+                                        consumeAsync(tag,purchase.getPurchaseToken());
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                    listener.onPurchaseSuccess(list,listener.tag.equals(tag));
                 }
             }
             else

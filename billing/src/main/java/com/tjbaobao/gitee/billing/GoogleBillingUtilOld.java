@@ -204,8 +204,8 @@ public class GoogleBillingUtilOld {
             }
             if(responseCode== BillingClient.BillingResponse.OK&&list!=null)
             {
-                if(isAutoConsumeAsync)
-                {
+                boolean isAutoConsumeAsync = mOnPurchaseFinishedListener.onPurchaseSuccess(list);
+                if(isAutoConsumeAsync){
                     //消耗商品
                     for(Purchase purchase:list)
                     {
@@ -223,7 +223,6 @@ public class GoogleBillingUtilOld {
                         }
                     }
                 }
-                mOnPurchaseFinishedListener.onPurchaseSuccess(list);
             }
             else
             {
@@ -316,7 +315,13 @@ public class GoogleBillingUtilOld {
      */
     public void purchaseInApp(Activity activity,String skuId)
     {
-        purchase(activity,skuId, BillingClient.SkuType.INAPP);
+        String skuType = getSkuType(skuId);
+        if(BillingClient.SkuType.INAPP.equals(skuType)){
+            purchase(activity,skuId, BillingClient.SkuType.INAPP);
+        }else{
+            throw new RuntimeException(
+                    "检测到该商品id{"+skuId+"}的类型与内购类型{"+BillingClient.SkuType.INAPP+"}不相同");
+        }
     }
 
     /**
@@ -325,7 +330,13 @@ public class GoogleBillingUtilOld {
      */
     public void purchaseSubs(Activity activity,String skuId)
     {
-        purchase(activity,skuId, BillingClient.SkuType.SUBS);
+        String skuType = getSkuType(skuId);
+        if(BillingClient.SkuType.SUBS.equals(skuType)){
+            purchase(activity,skuId, BillingClient.SkuType.SUBS);
+        }else{
+            throw new RuntimeException(
+                    "检测到该商品id{"+skuId+"}的类型与订阅类型{"+BillingClient.SkuType.SUBS+"}不相同");
+        }
     }
 
     private void purchase(Activity activity,final String skuId,final String skuType)
@@ -459,15 +470,17 @@ public class GoogleBillingUtilOld {
                 if(purchasesResult.getResponseCode()== BillingClient.BillingResponse.OK)
                 {
                     List<Purchase> purchaseList =  purchasesResult.getPurchasesList();
-                    if(isAutoConsumeAsync)
+                    if(purchaseList!=null)
                     {
-                        if(purchaseList!=null)
-                        {
-                            for(Purchase purchase:purchaseList)
-                            {
-                                if(skuType.equals(BillingClient.SkuType.INAPP))
+                        if(mOnPurchaseFinishedListener!=null){
+                            boolean isAutoConsumeAsync = mOnPurchaseFinishedListener.onRecheck(skuType,purchaseList);
+                            if(isAutoConsumeAsync){
+                                for(Purchase purchase:purchaseList)
                                 {
-                                    consumeAsync(purchase.getPurchaseToken());
+                                    if(skuType.equals(BillingClient.SkuType.INAPP))
+                                    {
+                                        consumeAsync(purchase.getPurchaseToken());
+                                    }
                                 }
                             }
                         }
@@ -680,7 +693,9 @@ public class GoogleBillingUtilOld {
      */
     public interface OnPurchaseFinishedListener{
 
-        public void onPurchaseSuccess(List<Purchase> list);
+        public boolean onPurchaseSuccess(List<Purchase> list);
+
+        public boolean onRecheck(String skuType,List<Purchase> list);
 
         public void onPurchaseFail(int responseCode);
 

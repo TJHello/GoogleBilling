@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
             log(tempBuffer.toString())
         }
 
-        override fun onPurchaseSuccess(list: MutableList<Purchase>,isSelf: Boolean) {
+        override fun onPurchaseSuccess(list: MutableList<Purchase>,isSelf: Boolean) : Boolean{
             val tempBuffer = StringBuffer()
             tempBuffer.append("购买商品成功")
             for((i, purchase) in list.withIndex()){
@@ -80,6 +80,22 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             log(tempBuffer.toString())
+            return false
+        }
+
+        override fun onRecheck(
+            skuType: String,
+            list: MutableList<Purchase>,
+            isSelf: Boolean
+        ): Boolean {
+            val tempBuffer = StringBuffer()
+            if(skuType==GoogleBillingUtil.BILLING_TYPE_INAPP){
+                tempBuffer.append("检测到未处理的订单")
+            }else{
+                tempBuffer.append("检测到有效的订阅")
+            }
+            log(tempBuffer.toString())
+            return false
         }
 
         override fun onConsumeSuccess(purchaseToken: String,isSelf: Boolean) {
