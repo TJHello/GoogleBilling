@@ -1,8 +1,15 @@
-# GoogleBilling 1.2.1 [![](https://jitpack.io/v/TJHello/GoogleBilling.svg)](https://jitpack.io/#TJHello/GoogleBilling)
+# GoogleBilling 1.2.2 [![](https://jitpack.io/v/TJHello/GoogleBilling.svg)](https://jitpack.io/#TJHello/GoogleBilling/1.2.2)
 
 #### 基于com.android.billingclient:billing:1.2，对整个支付流程进行封装。
 ##### QQ群交流：425219113(计算机语言交流)
-##### [最新版2.0.0入口](https://gitee.com/tjbaobao/GoogleBilling/tree/2.0/)
+##### [最新版2.0.0入口](https://github.com/TJHello/GoogleBilling/tree/2.0)
+
+**1.2.2改动**
+
+- 重写自动消耗逻辑，改为每次购买成功，或者查询到未处理订单时，由使用者决定是否自动消耗。
+- 增加onRecheck接口，返回未处理的有效订单
+- 用内购id来发起订阅，或者用订阅id来发起内购时，会抛出异常提醒使用者。
+
 
 <img src="https://images.gitee.com/uploads/images/2019/0602/144013_b5f39e6b_927162.png"  width="216" height="384">
 <img src="https://images.gitee.com/uploads/images/2019/0602/144525_18b8420b_927162.png"  width="216" height="384">
