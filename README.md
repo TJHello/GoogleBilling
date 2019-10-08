@@ -122,7 +122,17 @@ public void purchaseSubs(Activity activity,String skuId) //发起订阅
 
  **5. 查询的时候返回的商品列表长度为0。** 
 
-setSkus的时候将内购sku和订阅sku的参数顺序弄错了，应该是第一个是内购的，第二个参数是订阅的。如果不是这个问题，请debug源码看sku是否设置正常。
+setSkus的时候将内购sku和订阅sku的参数顺序弄错了，应该是第一个是内购的，第二个参数是订阅的。
+
+或者是商品还没有发布成功，需要等待一段时间(很有可能，新发布的商品是无论怎么查询还是购买，谷歌那边都是没有响应的)
+
+
+ **6. 我们检测到您的应用使用的是旧版 Google Play Developer API。自 2019 年 12 月 1 日起，
+ 我们将不再支持此 API 的版本 1 和版本 2。请在该日期之前将您使用的 API 更新到版本 3。请注意，此变动与弃用 AIDL/结算库无关。**
+
+ 升级到com.android.billingclient:billing库，弃用AIDL相关代码。
+
+ 后台也要弃用v3的校验接口。具体见谷歌官方文档。
 
 
 ---
