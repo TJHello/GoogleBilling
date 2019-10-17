@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         }
         ivHelp.setOnClickListener {
             val intent = Intent()
-            val uri = Uri.parse("https://gitee.com/tjbaobao/GoogleBilling")
+            val uri = Uri.parse("https://github.com/TJHello/GoogleBilling")
             intent.action = Intent.ACTION_VIEW
             intent.data = uri
             startActivity(intent)
