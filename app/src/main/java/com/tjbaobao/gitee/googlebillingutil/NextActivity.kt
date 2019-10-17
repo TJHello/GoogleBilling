@@ -35,6 +35,8 @@ class NextActivity : AppCompatActivity() {
         googleBillingUtil = GoogleBillingUtil.getInstance()
             .addOnGoogleBillingListener(this, OnMyGoogleBillingListener())
             .build(this)
+
+        //region============================设置按钮点击监听============================
         tvBack.setOnClickListener {
             this.finish()
         }
@@ -44,6 +46,7 @@ class NextActivity : AppCompatActivity() {
         btSubs.setOnClickListener {
             googleBillingUtil.purchaseSubs(this@NextActivity,googleBillingUtil.getSubsSkuByPosition(0))
         }
+        //endregion
     }
 
     private inner class OnMyGoogleBillingListener : OnGoogleBillingListener(){
