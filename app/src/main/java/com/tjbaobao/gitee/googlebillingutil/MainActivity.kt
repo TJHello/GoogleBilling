@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
         GoogleBillingUtil.isDebug(true)
         GoogleBillingUtil.setSkus(arrayOf("inapp_1","inapp_2","inapp_3","noads"), arrayOf("weekly"))
 //        GoogleBillingUtil.setSkus(arrayOf("tips_level1","tips_level2","tips_level3"), null)//如果没有订阅
+        GoogleBillingUtil.setIsAutoAcknowledgePurchase(true)//设置自动确认购买
         googleBillingUtil = GoogleBillingUtil.getInstance()
             .addOnGoogleBillingListener(this, OnMyGoogleBillingListener())
             .build(this)
