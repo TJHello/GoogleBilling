@@ -658,7 +658,12 @@ public class GoogleBillingUtil {
                     }
                 }
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                    listener.onPurchaseSuccess(list,listener.tag.equals(tag));
+                    int i = 0;
+                    for(Purchase purchase:list)
+                    {
+                        listener.onPurchaseSuccess(purchase,listener.tag.equals(tag),i,list.size());
+                        i++;
+                    }
                 }
             }
             else

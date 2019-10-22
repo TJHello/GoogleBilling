@@ -27,10 +27,22 @@ public class OnGoogleBillingListener {
 
     /**
      * 购买成功
-     * @param list 商品列表
+     * @param purchase 商品
+     * @param isSelf 是否是当前页面的结果
+     * @param index 在当前列表的序号
+     * @param size 商品列表的长度
+     */
+    public void onPurchaseSuccess(@NonNull Purchase purchase, boolean isSelf,int index,int size){
+        onPurchaseSuccess(purchase,isSelf);
+    }
+
+    /**
+     * 购买成功
+     * @param purchase 商品
      * @param isSelf 是否是当前页面的结果
      */
-    public void onPurchaseSuccess(@NonNull List<Purchase> list, boolean isSelf){}
+    public void onPurchaseSuccess(@NonNull Purchase purchase, boolean isSelf){}
+
 
     /**
      * 初始化成功

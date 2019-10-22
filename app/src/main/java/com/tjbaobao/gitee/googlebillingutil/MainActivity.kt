@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
         GoogleBillingUtil.isDebug(true)
         GoogleBillingUtil.setSkus(arrayOf("tips_level1","tips_level2","tips_level3"), arrayOf("weekly","monthly","yearly"))
 //        GoogleBillingUtil.setSkus(arrayOf("tips_level1","tips_level2","tips_level3"), null)//如果没有订阅
+        GoogleBillingUtil.setIsAutoConsumeAsync(false)//在你不完成熟悉自动消耗的逻辑是，建议关闭自动消耗功能，或者改用122-21版本
         googleBillingUtil = GoogleBillingUtil.getInstance()
             .addOnGoogleBillingListener(this, OnMyGoogleBillingListener())
             .build(this)
@@ -73,18 +74,10 @@ class MainActivity : AppCompatActivity() {
             log(tempBuffer.toString())
         }
 
-        override fun onPurchaseSuccess(list: MutableList<Purchase>,isSelf: Boolean) {
+        override fun onPurchaseSuccess(purchase: Purchase,isSelf: Boolean) {
             val tempBuffer = StringBuffer()
-            tempBuffer.append("购买商品成功")
-            for((i, purchase) in list.withIndex()){
-                val details = String.format(Locale.getDefault(),"%s , %s",
-                    purchase.sku,purchase.purchaseToken
-                )
-                tempBuffer.append(details)
-                if(i!=list.size-1){
-                    tempBuffer.append("\n")
-                }
-            }
+            val details = String.format(Locale.getDefault(),"购买商品成功:%s", purchase.sku)
+            tempBuffer.append(details)
             log(tempBuffer.toString())
         }
 
