@@ -32,8 +32,7 @@ public class GoogleBillingUtil {
     private static Map<String,OnGoogleBillingListener> onGoogleBillingListenerMap = new HashMap<>();
     private MyPurchasesUpdatedListener purchasesUpdatedListener = new MyPurchasesUpdatedListener();
 
-    private static boolean isAutoConsumeAsync = true;//是否在购买成功后自动消耗商品
-    private static boolean isAutoAcknowledgePurchase = true;//是否在购买成功后自动消耗商品
+    private static boolean isAutoAcknowledgePurchase = true;
 
     private static final GoogleBillingUtil mGoogleBillingUtil = new GoogleBillingUtil() ;
 
@@ -121,16 +120,15 @@ public class GoogleBillingUtil {
         if(!mBillingClient.isReady())
         {
             mBillingClient.startConnection(new BillingClientStateListener() {
-
                 @Override
                 public void onBillingSetupFinished(BillingResult billingResult) {
                     if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                        queryInventoryInApp(tag);
-                        queryInventorySubs(tag);
-                        queryPurchasesInApp(tag);
                         for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
                             listener.onSetupSuccess(listener.tag.equals(tag));
                         }
+                        queryInventoryInApp(tag);
+                        queryInventorySubs(tag);
+                        queryPurchasesInApp(tag);
                     }
                     else
                     {
@@ -428,31 +426,37 @@ public class GoogleBillingUtil {
                 if(purchasesResult.getResponseCode()== BillingClient.BillingResponseCode.OK)
                 {
                     List<Purchase> purchaseList =  purchasesResult.getPurchasesList();
-                    if(purchaseList!=null)
+                    if(purchaseList!=null&&!purchaseList.isEmpty())
                     {
                         for(Purchase purchase:purchaseList)
                         {
-                            if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
-                                if(skuType.equals(BillingClient.SkuType.INAPP))
-                                {
-                                    if(isAutoConsumeAsync) {
-                                        consumeAsync(tag,purchase.getPurchaseToken());
-                                    }else if(isAutoAcknowledgePurchase){
-                                        if(!purchase.isAcknowledged()){
-                                            acknowledgePurchase(tag,purchase.getPurchaseToken());
+                            for(OnGoogleBillingListener listener : onGoogleBillingListenerList) {
+                                boolean isSelf = listener.tag.equals(tag);//是否是当前页面
+                                boolean isSuccess = listener.onRecheck(skuType, purchase, isSelf);//是否消耗或者确认
+                                if(isSelf){
+                                    if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
+                                        if(skuType.equals(BillingClient.SkuType.INAPP)) {
+                                            if(isSuccess){
+                                                consumeAsync(tag,purchase.getPurchaseToken());
+                                            }else if(isAutoAcknowledgePurchase){
+                                                if(!purchase.isAcknowledged()){
+                                                    acknowledgePurchase(tag,purchase.getPurchaseToken());
+                                                }
+                                            }
+                                        }else if(skuType.equals(BillingClient.SkuType.SUBS)){
+                                            if(isAutoAcknowledgePurchase){
+                                                if(!purchase.isAcknowledged()){
+                                                    acknowledgePurchase(tag,purchase.getPurchaseToken());
+                                                }
+                                            }
                                         }
-                                    }
-                                }else if(skuType.equals(BillingClient.SkuType.SUBS)){
-                                    if(isAutoAcknowledgePurchase){
-                                        if(!purchase.isAcknowledged()){
-                                            acknowledgePurchase(tag,purchase.getPurchaseToken());
-                                        }
+                                    }else{
+                                        log("未支付的订单:"+purchase.getSku());
                                     }
                                 }
                             }
                         }
                     }
-
                     return purchaseList;
                 }
             }
@@ -633,14 +637,6 @@ public class GoogleBillingUtil {
     }
 
     /**
-     * 设置是否自动消耗内购商品
-     * @param isAutoConsumeAsync 自动消耗内购商品
-     */
-    public static void setIsAutoConsumeAsync(boolean isAutoConsumeAsync) {
-        GoogleBillingUtil.isAutoConsumeAsync= isAutoConsumeAsync;
-    }
-
-    /**
      * 设置是否自动确认购买
      * @param isAutoAcknowledgePurchase boolean
      */
@@ -687,7 +683,8 @@ public class GoogleBillingUtil {
 
     public void removeOnGoogleBillingListener(Activity activity){
         String tag = getTag(activity);
-        for(OnGoogleBillingListener listener : onGoogleBillingListenerList ){
+        for(int i=onGoogleBillingListenerList.size()-1;i>=0;i--){
+            OnGoogleBillingListener listener = onGoogleBillingListenerList.get(i);
             if(listener.tag.equals(tag)){
                 removeOnGoogleBillingListener(listener);
                 onGoogleBillingListenerMap.remove(tag);
@@ -719,38 +716,35 @@ public class GoogleBillingUtil {
         public void onPurchasesUpdated(BillingResult billingResult, @Nullable List<Purchase> list) {
             if(billingResult.getResponseCode()== BillingClient.BillingResponseCode.OK&&list!=null)
             {
-                //消耗商品
-                for(Purchase purchase:list)
-                {
-                    if(purchase.getPurchaseState()== Purchase.PurchaseState.PURCHASED){
-                        //已购买
-                        String sku = purchase.getSku();
-                        String skuType = getSkuType(sku);
-                        if(skuType!=null)
-                        {
-                            if(skuType.equals(BillingClient.SkuType.INAPP))
-                            {
-                                if(isAutoConsumeAsync) {
+                for(Purchase purchase:list) {
+                    for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                        boolean isSelf = listener.tag.equals(tag);//是否是当前页面
+                        boolean isSuccess = listener.onPurchaseSuccess(purchase,isSelf);//是否自动消耗
+                        if(isSelf&&purchase.getPurchaseState()== Purchase.PurchaseState.PURCHASED){
+                            //是当前页面，并且商品状态为支付成功，才会进行消耗与确认的操作
+                            String skuType = getSkuType(purchase.getSku());
+                            if(BillingClient.SkuType.INAPP.equals(skuType)){
+                                if(isSuccess){
+                                    //进行消耗
                                     consumeAsync(tag,purchase.getPurchaseToken());
                                 }else if(isAutoAcknowledgePurchase){
+                                    //进行确认购买
                                     if(!purchase.isAcknowledged()){
                                         acknowledgePurchase(tag,purchase.getPurchaseToken());
                                     }
                                 }
-                            }
-                            else if(skuType.equals(BillingClient.SkuType.SUBS))
-                            {
+                            }else if(BillingClient.SkuType.SUBS.equals(skuType)){
+                                //进行确认购买
                                 if(isAutoAcknowledgePurchase){
                                     if(!purchase.isAcknowledged()){
                                         acknowledgePurchase(tag,purchase.getPurchaseToken());
                                     }
                                 }
                             }
+                        }else if(purchase.getPurchaseState()== Purchase.PurchaseState.PENDING){
+                            log("待处理的订单:"+purchase.getSku());
                         }
                     }
-                }
-                for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
-                    listener.onPurchaseSuccess(list,listener.tag.equals(tag));
                 }
             }
             else

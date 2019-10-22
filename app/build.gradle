@@ -8,14 +8,13 @@ apply plugin: 'kotlin-android-extensions'
 android {
 
 
-
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.colors.by.number.no.diamond"//原包名 com.tjbaobao.gitee.googlebillingutil
+        applicationId "com.logic.nono.pixel"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 50//1.0.1
-        versionName "2.0.10"//1.0.1
+        versionCode 14
+        versionName "0.9.14"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -25,7 +24,9 @@ android {
         }
 
         debug {
-//            signingConfig signingConfigs.config_google_billing
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.config
         }
     }
 
@@ -43,7 +44,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-//    implementation 'com.gitee.tjbaobao:GoogleBilling:1.2.1-alpha04'
 
     implementation project(':billing')
 }

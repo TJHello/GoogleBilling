@@ -62,16 +62,23 @@ class NextActivity : AppCompatActivity() {
             }
         }
 
-        override fun onPurchaseSuccess(list: MutableList<Purchase>,isSelf:Boolean) {
-            for(purchase in list){
-                val sku = purchase.sku
+        override fun onPurchaseSuccess(purchase: Purchase,isSelf:Boolean):Boolean {
+            val sku = purchase.sku
+            if(purchase.purchaseState==Purchase.PurchaseState.PURCHASED){
                 val skuType = googleBillingUtil.getSkuType(sku)
                 if(skuType==GoogleBillingUtil.BILLING_TYPE_INAPP){
                     Toast.makeText(this@NextActivity,"内购成功:$sku",Toast.LENGTH_LONG).show()
                 }else if(skuType==GoogleBillingUtil.BILLING_TYPE_SUBS){
                     Toast.makeText(this@NextActivity,"订阅成功:$sku",Toast.LENGTH_LONG).show()
                 }
+            }else if(purchase.purchaseState==Purchase.PurchaseState.PENDING){
+                Toast.makeText(this@NextActivity,"待处理的订单:$sku",Toast.LENGTH_LONG).show()
             }
+            if(sku=="noads"){
+                //不进行消耗
+                return false
+            }
+            return true
         }
 
     }

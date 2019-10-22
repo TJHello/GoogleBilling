@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         GoogleBillingUtil.isDebug(true)
-        GoogleBillingUtil.setSkus(arrayOf("tips_level1","tips_level2","tips_level3"), arrayOf("weekly","monthly","yearly"))
+        GoogleBillingUtil.setSkus(arrayOf("inapp_1","inapp_2","inapp_3","noads"), arrayOf("weekly"))
 //        GoogleBillingUtil.setSkus(arrayOf("tips_level1","tips_level2","tips_level3"), null)//如果没有订阅
         googleBillingUtil = GoogleBillingUtil.getInstance()
             .addOnGoogleBillingListener(this, OnMyGoogleBillingListener())
@@ -67,19 +67,28 @@ class MainActivity : AppCompatActivity() {
             log(tempBuffer.toString())
         }
 
-        override fun onPurchaseSuccess(list: MutableList<Purchase>,isSelf: Boolean) {
+        override fun onRecheck(skuType: String, purchase: Purchase, isSelf: Boolean): Boolean {
             val tempBuffer = StringBuffer()
-            tempBuffer.append("购买商品成功")
-            for((i, purchase) in list.withIndex()){
-                val details = String.format(Locale.getDefault(),"%s , %s",
-                    purchase.sku,purchase.purchaseToken
-                )
-                tempBuffer.append(details)
-                if(i!=list.size-1){
-                    tempBuffer.append("\n")
-                }
-            }
+            tempBuffer.append("检测到未处理的订单($skuType):${purchase.sku}(${getPurchaseStateTxt(purchase.purchaseState)})")
             log(tempBuffer.toString())
+            if(purchase.sku=="noads"){
+                //不要自动消耗
+                return false
+            }
+            return true
+        }
+
+        override fun onPurchaseSuccess(purchase: Purchase,isSelf: Boolean):Boolean {
+            val tempBuffer = StringBuffer()
+            if(purchase.purchaseState==Purchase.PurchaseState.PURCHASED){
+                tempBuffer.append("购买成功:")
+            }else{
+                tempBuffer.append("暂未支付:")
+            }
+            val details = String.format(Locale.getDefault(),"%s \n", purchase.sku)
+            tempBuffer.append(details)
+            log(tempBuffer.toString())
+            return true //自动消耗(只有当isSelf为true,并且支付状态为PURCHASED时，该值才会生效)
         }
 
         override fun onConsumeSuccess(purchaseToken: String,isSelf: Boolean) {
@@ -96,6 +105,15 @@ class MainActivity : AppCompatActivity() {
 
         override fun onError(tag: GoogleBillingUtil.GoogleBillingListenerTag,isSelf: Boolean) {
             log("发生错误:tag=${tag.name}")
+        }
+
+        private fun getPurchaseStateTxt(@Purchase.PurchaseState state:Int):String{
+            return when(state){
+                Purchase.PurchaseState.PURCHASED->"PURCHASED"
+                Purchase.PurchaseState.PENDING->"PENDING"
+                Purchase.PurchaseState.UNSPECIFIED_STATE->"UNSPECIFIED_STATE"
+                else->"未知状态"
+            }
         }
     }
 
