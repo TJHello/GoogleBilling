@@ -64,6 +64,15 @@ dependencies {
         override fun onSetupSuccess() {
             
         }
+
+        // override fun onRecheck(
+                      skuType: String,
+                      purchase : Purchase,
+                      isSelf: Boolean
+                  ): Boolean {
+
+            return true//是否消耗该商品(仅当前页面的返回值才生效。)
+        }
     }
     
     override fun onDestroy() {

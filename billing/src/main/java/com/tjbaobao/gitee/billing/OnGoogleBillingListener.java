@@ -31,11 +31,11 @@ public class OnGoogleBillingListener {
     /**
      * 购买成功
      *
-     * @param list   商品列表
+     * @param purchase   商品
      * @param isSelf 是否是当前页面的结果
      * @return 是否自动消耗
      */
-    public boolean onPurchaseSuccess(@NonNull List<Purchase> list, boolean isSelf) {
+    public boolean onPurchaseSuccess(@NonNull Purchase purchase, boolean isSelf) {
         return false;
     }
 
@@ -51,12 +51,12 @@ public class OnGoogleBillingListener {
      * 每次启动重新检查订单，返回有效的订单
      *
      * @param skuType 内购或者订阅
-     * @param list    商品列表
+     * @param purchase    商品
      * @param isSelf  是否是当前页面的结果
      *
      * @return 是否自动消耗
      */
-    public boolean onRecheck(@NonNull String skuType, @NonNull List<Purchase> list, boolean isSelf) {
+    public boolean onRecheck(@NonNull String skuType, @NonNull Purchase purchase, boolean isSelf) {
         return false;
     }
 

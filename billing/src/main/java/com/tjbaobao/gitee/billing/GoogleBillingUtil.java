@@ -378,23 +378,22 @@ public class GoogleBillingUtil {
             {
                 if(purchasesResult.getResponseCode()== BillingClient.BillingResponse.OK)
                 {
-                    boolean isConsumeAsync = true;
                     List<Purchase> purchaseList =  purchasesResult.getPurchasesList();
                     if(purchaseList!=null&&!purchaseList.isEmpty())
                     {
                         for(OnGoogleBillingListener listener : onGoogleBillingListenerList) {
                             boolean isSelf = listener.tag.equals(tag);//是否是当前页面
-                            boolean isSuccess = listener.onRecheck(skuType, purchaseList, isSelf);
-                            if (isSuccess && isConsumeAsync) {
-                                for(Purchase purchase:purchaseList)
-                                {
+                            for(Purchase purchase:purchaseList)
+                            {
+                                boolean isSuccess = listener.onRecheck(skuType, purchase, isSelf);
+                                if (isSuccess && isSelf) {
                                     if(skuType.equals(BillingClient.SkuType.INAPP))
                                     {
-                                        isConsumeAsync = false;
                                         consumeAsync(tag,purchase.getPurchaseToken());
                                     }
                                 }
                             }
+
                         }
                     }
                     return purchaseList;
@@ -645,25 +644,19 @@ public class GoogleBillingUtil {
         public void onPurchasesUpdated(int responseCode, @Nullable List<Purchase> list) {
             if(responseCode== BillingClient.BillingResponse.OK&&list!=null)
             {
-                boolean isConsumeAsync = true;
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
                     boolean isSelf = listener.tag.equals(tag);//是否是当前页面
-                    boolean isSuccess = listener.onPurchaseSuccess(list,isSelf);//是否允许消耗
-                    if(isSuccess&&isConsumeAsync){
-                        //消耗商品
-                        for(Purchase purchase:list)
-                        {
-                            String sku = purchase.getSku();
-                            if(sku!=null)
+                    for(Purchase purchase:list) {
+                        boolean isSuccess = listener.onPurchaseSuccess(purchase,isSelf);//是否允许消耗
+                        String sku = purchase.getSku();
+                        if(isSuccess&&isSelf){
+                            //消耗商品
+                            String skuType = getSkuType(sku);
+                            if(skuType!=null)
                             {
-                                String skuType = getSkuType(sku);
-                                if(skuType!=null)
+                                if(skuType.equals(BillingClient.SkuType.INAPP))
                                 {
-                                    if(skuType.equals(BillingClient.SkuType.INAPP))
-                                    {
-                                        isConsumeAsync = false;
-                                        consumeAsync(tag,purchase.getPurchaseToken());
-                                    }
+                                    consumeAsync(tag,purchase.getPurchaseToken());
                                 }
                             }
                         }
