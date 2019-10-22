@@ -1,4 +1,4 @@
-# GoogleBilling 12221 [![](https://jitpack.io/v/TJHello/GoogleBilling.svg)](https://jitpack.io/#TJHello/GoogleBilling/1.2.2)
+# GoogleBilling 122-21 [![](https://jitpack.io/v/TJHello/GoogleBilling.svg)](https://jitpack.io/#TJHello/GoogleBilling/1.2.2)
 
 #### 基于com.android.billingclient:billing:1.2，对整个支付流程进行封装。
 ##### QQ群交流：425219113(计算机语言交流)
