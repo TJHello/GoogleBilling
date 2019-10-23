@@ -5,7 +5,7 @@
 ##### [最新版测试版2.0.3.10入口](https://github.com/TJHello/GoogleBilling/tree/2.0/)
 ##### [测试版1.2.2.21入口](https://github.com/TJHello/GoogleBilling/tree/1.2.2/)
 
-**1.2.2改动**
+**1.2.2.21改动**
 
 - 重写自动消耗逻辑，改为每次购买成功，或者查询到未处理订单时，由使用者决定是否自动消耗。
 - 增加onRecheck接口，返回未处理的有效订单
