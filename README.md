@@ -65,7 +65,8 @@ dependencies {
             
         }
 
-        // override fun onRecheck(
+        //未处理的订单
+        override fun onRecheck(
                       skuType: String,
                       purchase : Purchase,
                       isSelf: Boolean
