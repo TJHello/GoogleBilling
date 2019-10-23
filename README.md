@@ -1,6 +1,6 @@
 # GoogleBilling 1.2.2.12 [![](https://jitpack.io/v/TJHello/GoogleBilling.svg)](https://jitpack.io/#TJHello/GoogleBilling)
 
-#### 基于com.android.billingclient:billing:1.2，对整个支付流程进行封装。
+#### 基于com.android.billingclient:billing:1.2.2，对整个支付流程进行封装。
 ##### QQ群交流：425219113(计算机语言交流)
 ##### [最新版测试版2.0.0入口](https://github.com/TJHello/GoogleBilling/tree/2.0/)
 ##### [测试版1.2.2入口](https://github.com/TJHello/GoogleBilling/tree/1.2.2/)
@@ -35,7 +35,7 @@ android {
     }
 }
 dependencies {
-     implementation 'com.github.TJHello:GoogleBilling:1.2.1-beta06'
+     implementation 'com.github.TJHello:GoogleBilling:1.2.2.12'
 }
 
 
