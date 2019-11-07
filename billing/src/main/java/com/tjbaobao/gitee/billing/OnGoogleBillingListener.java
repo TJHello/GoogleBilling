@@ -39,6 +39,9 @@ public class OnGoogleBillingListener {
         return false;
     }
 
+    public void onPurchaseSuccess(@NonNull List<Purchase> list, boolean isSelf) {
+    }
+
     /**
      * 初始化成功
      *

@@ -646,6 +646,7 @@ public class GoogleBillingUtil {
             {
                 for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
                     boolean isSelf = listener.tag.equals(tag);//是否是当前页面
+                    listener.onPurchaseSuccess(list,isSelf);
                     for(Purchase purchase:list) {
                         boolean isSuccess = listener.onPurchaseSuccess(purchase,isSelf);//是否允许消耗
                         String sku = purchase.getSku();
