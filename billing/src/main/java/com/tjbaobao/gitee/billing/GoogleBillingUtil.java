@@ -9,10 +9,24 @@ import com.android.billingclient.api.*;
 import java.util.*;
 
 /**
- * 作者:TJbaobao
+ * 作者:天镜baobao
  * 时间:2019/1/5  15:16
  * 说明:允许对该封装进行改动，但请注明出处。
  * 使用：
+ *
+ * Copyright 2019 天镜baobao
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 @SuppressWarnings({"WeakerAccess", "unused", "UnusedReturnValue"})
