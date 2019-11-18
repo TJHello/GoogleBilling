@@ -267,7 +267,7 @@ public class GoogleBillingUtil {
                     .setType(skuType)
                     .build();
             mBillingClient.querySkuDetailsAsync(skuDetailsParams, (responseCode, skuDetailsList) -> {
-                if(!skuDetailsList.isEmpty()){
+                if(skuDetailsList!=null&&!skuDetailsList.isEmpty()){
                     BillingFlowParams flowParams = BillingFlowParams.newBuilder()
                             .setSkuDetails(skuDetailsList.get(0))
                             .build();
