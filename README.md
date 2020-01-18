@@ -5,6 +5,8 @@
 ##### [最新版测试版2.0.3.10入口](https://github.com/TJHello/GoogleBilling/tree/2.0/)
 ##### [测试版1.2.2.21入口](https://github.com/TJHello/GoogleBilling/tree/1.2.2/)
 
+**推荐一款我写的全平台广告快速集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/103683374](https://blog.csdn.net/u013640004/article/details/103683374)**
+
 **1.2.2.21改动**
 
 - 重写自动消耗逻辑，改为每次购买成功，或者查询到未处理订单时，由使用者决定是否自动消耗。
