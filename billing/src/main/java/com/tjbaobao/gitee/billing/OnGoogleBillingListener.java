@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.SkuDetails;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -91,5 +92,13 @@ public class OnGoogleBillingListener {
      * @param isSelf 是否是当前页面的结果
      */
     public void onError(@NonNull GoogleBillingUtil.GoogleBillingListenerTag tag, boolean isSelf){}
+
+    /**
+     * 获取历史订单-无论是否还有效
+     * @param purchase 商品实体
+     */
+    public void onQueryHistory(@NonNull Purchase purchase){
+
+    }
 
 }
