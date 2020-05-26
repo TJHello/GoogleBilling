@@ -115,4 +115,11 @@ public class OnGoogleBillingListener {
     public void onError(@NonNull GoogleBillingUtil.GoogleBillingListenerTag tag, boolean isSelf) {
     }
 
+    /**
+     * 获取历史订单-无论是否还有效
+     * @param purchase 商品实体
+     */
+    public void onQueryHistory(@NonNull Purchase purchase){
+
+    }
 }

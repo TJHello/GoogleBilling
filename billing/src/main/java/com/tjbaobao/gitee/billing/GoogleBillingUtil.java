@@ -421,31 +421,27 @@ public class GoogleBillingUtil {
     //endregion
 
     //region===================================在线订单查询=================================
-
     /**
      * 异步联网查询所有的内购历史-无论是过期的、取消、等等的订单
-     * @param listener 监听器
+     * @param activity activity
      */
-    public void queryPurchaseHistoryAsyncInApp(PurchaseHistoryResponseListener listener){
-        if(isReady()) {
-            mBillingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.INAPP,listener);
-        } else{
-            listener.onPurchaseHistoryResponse(BillingClient.BillingResponse.SERVICE_DISCONNECTED,null);
-        }
+    public void queryPurchaseHistoryAsyncInApp(Activity activity){
+        queryPurchaseHistoryAsync(getTag(activity),BILLING_TYPE_INAPP);
     }
 
     /**
      * 异步联网查询所有的订阅历史-无论是过期的、取消、等等的订单
-     * @param listener 监听器
+     * @param activity activity
      */
-    public void queryPurchaseHistoryAsyncSubs(PurchaseHistoryResponseListener listener){
-        if(isReady()) {
-            mBillingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.SUBS,listener);
-        }else{
-            listener.onPurchaseHistoryResponse(BillingClient.BillingResponse.SERVICE_DISCONNECTED,null);
-        }
+    public void queryPurchaseHistoryAsyncSubs(Activity activity){
+        queryPurchaseHistoryAsync(getTag(activity),BILLING_TYPE_SUBS);
     }
 
+    private void queryPurchaseHistoryAsync(String tag,String type){
+        if(isReady()) {
+            mBillingClient.queryPurchaseHistoryAsync(type,new MyPurchaseHistoryResponseListener(tag));
+        }
+    }
     //endregion
 
     //region===================================工具集合=================================
@@ -747,12 +743,36 @@ public class GoogleBillingUtil {
         }
     }
 
+    private class MyPurchaseHistoryResponseListener implements PurchaseHistoryResponseListener{
+
+        private String tag ;
+        public MyPurchaseHistoryResponseListener(String tag) {
+            this.tag = tag;
+        }
+
+        @Override
+        public void onPurchaseHistoryResponse(int responseCode, List<Purchase> list) {
+            if(responseCode== BillingClient.BillingResponse.OK&&list!=null){
+                for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                    for (Purchase purchase : list) {
+                        listener.onQueryHistory(purchase);
+                    }
+                }
+            }else{
+                for(OnGoogleBillingListener listener:onGoogleBillingListenerList){
+                    listener.onFail(GoogleBillingListenerTag.HISTORY,responseCode,listener.tag.equals(tag));
+                }
+            }
+        }
+    }
+
     public enum GoogleBillingListenerTag{
 
         QUERY("query"),
         PURCHASE("purchase"),
         SETUP("setup"),
-        COMSUME("comsume")
+        COMSUME("comsume"),
+        HISTORY("history")
         ;
         public String tag ;
         GoogleBillingListenerTag(String tag){
