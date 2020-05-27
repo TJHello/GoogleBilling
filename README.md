@@ -6,7 +6,7 @@
 
 **推荐一款我写的全平台广告快速集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/103683374](https://blog.csdn.net/u013640004/article/details/103683374)**
 
-**1.2.2.21改动**
+**1.2.2.2x改动**
 
 - 重写自动消耗逻辑，改为每次购买成功，或者查询到未处理订单时，由使用者决定是否自动消耗。
 - 增加onRecheck接口，返回未处理的有效订单
@@ -25,7 +25,7 @@
 allprojects {
       repositories {
   	    ...
-  	    maven { url 'https://jitpack.io' }
+  	    maven { url 'https://raw.githubusercontent.com/TJHello/publicLib/master'}
       }
   }
 //app
@@ -36,7 +36,7 @@ android {
     }
 }
 dependencies {
-    implementation 'com.github.TJHello:GoogleBilling:1.2.2.21-alpha05'
+    implementation 'com.github.TJHello:GoogleBilling:1.2.2.22'
 }
 
 
@@ -92,6 +92,10 @@ public void queryInventoryInApp() //查询内购商品信息列表
 public void queryInventorySubs() //查询订阅商品信息列表
 public void purchaseInApp(Activity activity,String skuId) //发起内购
 public void purchaseSubs(Activity activity,String skuId) //发起订阅
+public List<Purchase> queryPurchasesInApp(Activity activity)//获取有效内购订单
+public List<Purchase> queryPurchasesSubs(Activity activity)//获取有效订阅订单
+public void queryPurchaseHistoryAsyncInApp(Activity activity)//查询历史内购订单
+public void queryPurchaseHistoryAsyncSubs(Activity activity)//查询历史订阅订单
 
 ```
 
@@ -205,10 +209,10 @@ public List<Purchase> queryPurchasesSubs(Activity activity)
 
 ```
 //异步联网查询所有的内购历史-无论是过期的、取消、等等的订单
-public void queryPurchaseHistoryAsyncInApp(PurchaseHistoryResponseListener listener)
+public void queryPurchaseHistoryAsyncInApp(Activity activity)
 
 //异步联网查询所有的订阅历史-无论是过期的、取消、等等的订单
-public void queryPurchaseHistoryAsyncSubs(PurchaseHistoryResponseListener listener)
+public void queryPurchaseHistoryAsyncSubs(Activity activity)
 
 ```
 7. 工具集合
