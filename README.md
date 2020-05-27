@@ -1,15 +1,15 @@
-# GoogleBilling 1.2.2.12 [![](https://jitpack.io/v/TJHello/GoogleBilling.svg)](https://jitpack.io/#TJHello/GoogleBilling)
+# GoogleBilling 1.2.2.13 [![](https://jitpack.io/v/TJHello/GoogleBilling.svg)](https://jitpack.io/#TJHello/GoogleBilling)
 
 #### 基于com.android.billingclient:billing:1.2.2，对整个支付流程进行封装。
 ##### QQ群交流：425219113(计算机语言交流)
 ##### [最新版测试版2.0.3.10入口](https://github.com/TJHello/GoogleBilling/tree/2.0/)
-##### [测试版1.2.2.21入口](https://github.com/TJHello/GoogleBilling/tree/1.2.2/)
+##### [测试版1.2.2.22入口](https://github.com/TJHello/GoogleBilling/tree/1.2.2/)
 
 **推荐一款我写的全平台广告快速集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/103683374](https://blog.csdn.net/u013640004/article/details/103683374)**
 
 **友情链接一款IOS内购封装【[DYFStoreKit](https://github.com/dgynfi/DYFStoreKit)】【[DYFStore](https://github.com/dgynfi/DYFStore)】**
 
-**1.2.2.21改动**
+**1.2.2.22改动**
 
 - 重写自动消耗逻辑，改为每次购买成功，或者查询到未处理订单时，由使用者决定是否自动消耗。
 - 增加onRecheck接口，返回未处理的有效订单
@@ -28,7 +28,7 @@
 allprojects {
       repositories {
   	    ...
-  	    maven { url 'https://jitpack.io' }
+  	    maven { url 'https://raw.githubusercontent.com/TJHello/publicLib/master'}
       }
   }
 //app
@@ -39,7 +39,7 @@ android {
     }
 }
 dependencies {
-     implementation 'com.github.TJHello:GoogleBilling:1.2.2.12'
+     implementation 'com.TJHello:GoogleBilling:1.2.2.13'
 }
 
 
@@ -85,7 +85,10 @@ public void queryInventoryInApp() //查询内购商品信息列表
 public void queryInventorySubs() //查询订阅商品信息列表
 public void purchaseInApp(Activity activity,String skuId) //发起内购
 public void purchaseSubs(Activity activity,String skuId) //发起订阅
-
+public List<Purchase> queryPurchasesInApp(Activity activity)//获取有效内购订单
+public List<Purchase> queryPurchasesSubs(Activity activity)//获取有效订阅订单
+public void queryPurchaseHistoryAsyncInApp(Activity activity)//查询历史内购订单
+public void queryPurchaseHistoryAsyncSubs(Activity activity)//查询历史订阅订单
 ```
 
 ---
@@ -208,10 +211,10 @@ public List<Purchase> queryPurchasesSubs(Activity activity)
 
 ```
 //异步联网查询所有的内购历史-无论是过期的、取消、等等的订单
-public void queryPurchaseHistoryAsyncInApp(PurchaseHistoryResponseListener listener)
+public void queryPurchaseHistoryAsyncInApp(Activity activity)
 
 //异步联网查询所有的订阅历史-无论是过期的、取消、等等的订单
-public void queryPurchaseHistoryAsyncSubs(PurchaseHistoryResponseListener listener)
+public void queryPurchaseHistoryAsyncSubs(Activity activity)
 
 ```
 7. 工具集合
