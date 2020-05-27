@@ -27,7 +27,7 @@
 allprojects {
       repositories {
   	    ...
-  	    maven { url 'https://jitpack.io' }
+  	    maven { url 'https://raw.githubusercontent.com/TJHello/publicLib/master'}
       }
   }
 //app
@@ -38,7 +38,7 @@ android {
     }
 }
 dependencies {
-    implementation 'com.github.TJHello:GoogleBilling:2.0.3.10-alpha03'
+    implementation 'com.TJHello:GoogleBilling:2.0.3.10-alpha04'
 }
 
 
@@ -85,6 +85,10 @@ public void queryInventoryInApp() //查询内购商品信息列表
 public void queryInventorySubs() //查询订阅商品信息列表
 public void purchaseInApp(Activity activity,String skuId) //发起内购
 public void purchaseSubs(Activity activity,String skuId) //发起订阅
+public List<Purchase> queryPurchasesInApp(Activity activity)//获取有效内购订单
+public List<Purchase> queryPurchasesSubs(Activity activity)//获取有效订阅订单
+public boolean queryPurchaseHistoryAsyncInApp(Activity activity)//查询历史内购订单
+public boolean queryPurchaseHistoryAsyncSubs(Activity activity)//查询历史订阅订单
 
 ```
 

@@ -3,8 +3,10 @@ package com.tjbaobao.gitee.billing;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.SkuDetails;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -102,4 +104,12 @@ public class OnGoogleBillingListener {
      */
     public void onError(@NonNull GoogleBillingUtil.GoogleBillingListenerTag tag, boolean isSelf){}
 
+
+    /**
+     * 获取历史订单-无论是否还有效
+     * @param purchaseList 商品历史列表
+     */
+    public void onQueryHistory(@NonNull List<PurchaseHistoryRecord> purchaseList){
+
+    }
 }

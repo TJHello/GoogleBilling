@@ -1,6 +1,11 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
-group='com.gitee.tjbaobao'
+apply plugin: 'maven'
+
+ext.ver = '2.0.3.10-alpha04'
+ext.verCode = 20310
+ext.GROUP_ID = 'com.TJHello'
+ext.POM_ARTIFACT_ID = 'GoogleBilling'
 
 android {
     compileSdkVersion 28
@@ -12,7 +17,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
+        consumerProguardFiles 'consumer-rules.pro'
     }
 
     buildTypes {
@@ -52,4 +57,15 @@ tasks.withType(Javadoc) {
     options.addStringOption('Xdoclint:none', '-quiet')
     options.addStringOption('encoding', 'UTF-8')
     options.addStringOption('charSet', 'UTF-8')
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri("C:\\Android\\unityWorkSpace\\ADEasyLib\\repo"))
+            pom.groupId = GROUP_ID
+            pom.artifactId = POM_ARTIFACT_ID
+            pom.version = ver
+        }
+    }
 }
