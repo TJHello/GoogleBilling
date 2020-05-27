@@ -1,6 +1,11 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
-group='com.gitee.tjbaobao'
+apply plugin: 'maven'
+
+ext.ver = '1.2.2.13'
+ext.verCode = 122213
+ext.GROUP_ID = 'com.TJHello'
+ext.POM_ARTIFACT_ID = 'GoogleBilling'
 
 android {
     compileSdkVersion 28
@@ -8,10 +13,11 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode verCode
+        versionName "${ver}"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
 
     }
 
@@ -43,17 +49,8 @@ task sourcesJar(type: Jar) {
     classifier = 'sources'
     from android.sourceSets.main.java.sourceFiles
 }
-//task javadoc(type: Javadoc) {
-//    source = android.sourceSets.main.java.srcDirs
-//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-//}
-//task javadocJar(type: Jar, dependsOn: javadoc) {
-//    classifier = 'javadoc'
-//    from javadoc.destinationDir
-//}
 
 artifacts {
-//    archives javadocJar
     archives sourcesJar
 }
 
@@ -61,4 +58,15 @@ tasks.withType(Javadoc) {
     options.addStringOption('Xdoclint:none', '-quiet')
     options.addStringOption('encoding', 'UTF-8')
     options.addStringOption('charSet', 'UTF-8')
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri("C:\\Android\\unityWorkSpace\\ADEasyLib\\repo"))
+            pom.groupId = GROUP_ID
+            pom.artifactId = POM_ARTIFACT_ID
+            pom.version = ver
+        }
+    }
 }
