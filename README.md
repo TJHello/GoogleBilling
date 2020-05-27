@@ -36,7 +36,7 @@ android {
     }
 }
 dependencies {
-    implementation 'com.github.TJHello:GoogleBilling:1.2.2.22'
+    implementation 'com.TJHello:GoogleBilling:1.2.2.22'
 }
 
 
