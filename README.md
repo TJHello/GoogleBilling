@@ -3,7 +3,7 @@
 #### 基于com.android.billingclient:billing:2.0.0，对整个支付流程进行封装。
 ##### QQ群交流：425219113(计算机语言交流)
 
-**推荐一款我写的全平台广告快速集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/105416193](https://blog.csdn.net/u013640004/article/details/105416193)**
+**自荐一款全平台广告聚合SDK自动集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/105416193](https://blog.csdn.net/u013640004/article/details/105416193)**
 
 ##### [1.2.2.21入口](https://gitee.com/tjbaobao/GoogleBilling/tree/master/)
 ##### 2.0.0新特性[(官方说明)](http://https://developer.android.com/google/play/billing/billing_library_releases_notes?hl=zh-cn)
