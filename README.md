@@ -5,7 +5,7 @@
 ##### [最新版测试版2.0.3.10入口](https://github.com/TJHello/GoogleBilling/tree/2.0/)
 ##### [测试版1.2.2.22入口](https://github.com/TJHello/GoogleBilling/tree/1.2.2/)
 
-**推荐一款我写的全平台广告快速集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/103683374](https://blog.csdn.net/u013640004/article/details/103683374)**
+**推荐一款我写的全平台广告快速集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/105416193](https://blog.csdn.net/u013640004/article/details/105416193)**
 
 **友情链接一款IOS内购封装【[DYFStoreKit](https://github.com/dgynfi/DYFStoreKit)】【[DYFStore](https://github.com/dgynfi/DYFStore)】**
 
