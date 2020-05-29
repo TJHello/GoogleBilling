@@ -4,7 +4,7 @@
 ##### QQ群交流：425219113(计算机语言交流)
 ##### [最新版2.0.0入口](https://github.com/TJHello/GoogleBilling/tree/2.0)
 
-**推荐一款我写的全平台广告快速集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/103683374](https://blog.csdn.net/u013640004/article/details/103683374)**
+**推荐一款我写的全平台广告快速集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/105416193](https://blog.csdn.net/u013640004/article/details/105416193)**
 
 **1.2.2.2x改动**
 
