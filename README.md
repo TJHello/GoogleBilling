@@ -2,6 +2,7 @@
 
 #### 基于com.android.billingclient:billing:1.2.2，对整个支付流程进行封装。
 ##### QQ群交流：425219113(计算机语言交流)
+##### [最新版测试版3.0.0.1入口](https://github.com/TJHello/GoogleBilling/tree/3.0/)
 ##### [最新版测试版2.0.3.10入口](https://github.com/TJHello/GoogleBilling/tree/2.0/)
 ##### [测试版1.2.2.22入口](https://github.com/TJHello/GoogleBilling/tree/1.2.2/)
 
