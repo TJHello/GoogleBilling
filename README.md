@@ -1,18 +1,20 @@
-# GoogleBilling 2.0.3.10 [![](https://jitpack.io/v/TJHello/GoogleBilling.svg)](https://jitpack.io/#TJHello/GoogleBilling)
+# GoogleBilling 3.0.0.1-a01
 
-#### 基于com.android.billingclient:billing:2.0.0，对整个支付流程进行封装。
+#### 基于com.android.billingclient:billing:3.0.0，对整个支付流程进行封装。
 ##### QQ群交流：425219113(计算机语言交流)
 
 **自荐一款全平台广告聚合SDK自动集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/105416193](https://blog.csdn.net/u013640004/article/details/105416193)**
 
 ##### [1.2.2.21入口](https://gitee.com/tjbaobao/GoogleBilling/tree/master/)
-##### 2.0.0新特性[(官方说明)](http://https://developer.android.com/google/play/billing/billing_library_releases_notes?hl=zh-cn)
+##### 3.0.0新特性[(官方说明)](https://developer.android.com/google/play/billing/release-notes)
 
-- 增加"确认购买"概念，每个新购买的商品都需要调用acknowledgePurchase方法来进行确认购买，如果没有进行确认购买，三天后会遭受系统自动退款。
-- 强制删除BillingFlowParams.setSku（）方法，改为使用BillingClient.querySkuDetailsAsync()+BillingFlowParams.Builder.setSkuDetails()来配置发起购买的参数。
-- 消耗商品和确认购买配置添加setDeveloperPayload()方法，可以将一个字符串传递给google，然后可以在查询商品记录里面获得该值。（目前没在发起购买里看到这个方法，具体试用场景还不是很明确）
-- 增加"待交易"概念，购买商品回调里面，我们需要通过getPurchaseState方法来判断商品当前的状态。(重要)
-- 其他一些api修改，问题不大。不过一些开发者测试之类的功能应该很有用，但我没有具体去看。
+- 删除了奖励的SKU支持。
+- 删除了ChildDirected和UnderAgeOfConsent参数。
+- 删除了不推荐使用的开发人员有效负载方法。
+- 删除了不推荐使用的方法BillingFlowParams.setAccountId() 和BillingFlowParams.setDeveloperId()。
+- 删除了不推荐使用的方法BillingFlowParams.setOldSkus(String oldSku) 和BillingFlowParams.addOldSku(String oldSku)。
+- 添加了可空性注释。
+- 其他bug修复
 
 
 <img src="https://images.gitee.com/uploads/images/2019/0602/144013_b5f39e6b_927162.png"  width="216" height="384">
@@ -28,6 +30,8 @@ allprojects {
       repositories {
   	    ...
   	    maven { url 'https://raw.githubusercontent.com/TJHello/publicLib/master'}
+        //如不可用，则
+        //maven { url 'https://tjhello.gitee.io/publiclib/'}
       }
   }
 //app
@@ -38,7 +42,7 @@ android {
     }
 }
 dependencies {
-    implementation 'com.TJHello:GoogleBilling:2.0.3.10-alpha04'
+    implementation 'com.TJHello:GoogleBilling:3.0.0.1-a01'
 }
 
 
@@ -135,7 +139,4 @@ setSkus的时候将内购sku和订阅sku的参数顺序弄错了，应该是第�
 ---
 ### =================API说明=================
 
-2.0.0版本新增
-
-- public static void setIsAutoAcknowledgePurchase(boolean isAutoAcknowledgePurchase) //设置是否自动确认购买
-- public void acknowledgePurchase(Activity activity,String purchaseToken)//确认购买
+3.0.0版本新增(无)

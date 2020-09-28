@@ -31,7 +31,7 @@ import java.util.*;
 @SuppressWarnings({"WeakerAccess", "unused", "UnusedReturnValue"})
 public class GoogleBillingUtil {
 
-    private static final String TAG = "GoogleBillingUtil";
+    private static final String TAG = "GoogleBillingUtil-"+BuildConfig.VERSION_NAME;
     private static boolean IS_DEBUG = false;
     private static String[] inAppSKUS = new String[]{};//内购ID,必填，注意！如果用不着的请去掉多余的""
     private static String[] subsSKUS = new String[]{};//订阅ID,必填，注意！如果用不着的请去掉多余的""
@@ -320,7 +320,6 @@ public class GoogleBillingUtil {
         }
         ConsumeParams consumeParams = ConsumeParams.newBuilder()
                 .setPurchaseToken(purchaseToken)
-                .setDeveloperPayload(developerPayload)
                 .build();
         mBillingClient.consumeAsync(consumeParams,new MyConsumeResponseListener(tag));
     }
@@ -390,7 +389,6 @@ public class GoogleBillingUtil {
         }
         AcknowledgePurchaseParams params = AcknowledgePurchaseParams.newBuilder()
                 .setPurchaseToken(purchaseToken)
-                .setDeveloperPayload(developerPayload)
                 .build();
         mBillingClient.acknowledgePurchase(params,new MyAcknowledgePurchaseResponseListener(tag));
     }
