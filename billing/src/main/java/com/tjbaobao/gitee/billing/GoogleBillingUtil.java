@@ -114,6 +114,7 @@ public class GoogleBillingUtil {
                 mGoogleBillingUtil.queryInventoryInApp(getTag(activity));
                 mGoogleBillingUtil.queryInventorySubs(getTag(activity));
                 mGoogleBillingUtil.queryPurchasesInApp(getTag(activity));
+                mGoogleBillingUtil.queryPurchasesSubs(getTag(activity));
             }
         }
         return mGoogleBillingUtil;
@@ -142,6 +143,7 @@ public class GoogleBillingUtil {
                         queryInventoryInApp(tag);
                         queryInventorySubs(tag);
                         queryPurchasesInApp(tag);
+                        queryPurchasesSubs(tag);
                     }
                     else
                     {
@@ -410,6 +412,15 @@ public class GoogleBillingUtil {
     private List<Purchase> queryPurchasesInApp(String tag)
     {
         return queryPurchases(tag,BillingClient.SkuType.INAPP);
+    }
+
+    /**
+     * 获取已经订阅的商品
+     * @return 商品列表
+     */
+    public List<Purchase> queryPurchasesSubs(String tag)
+    {
+        return queryPurchases(tag,BillingClient.SkuType.SUBS);
     }
 
     /**

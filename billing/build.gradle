@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'maven'
 
-ext.ver = '2.0.3.10-alpha04'
+ext.ver = '2.0.3.10-alpha05'
 ext.verCode = 20310
 ext.GROUP_ID = 'com.TJHello'
 ext.POM_ARTIFACT_ID = 'GoogleBilling'
