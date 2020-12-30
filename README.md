@@ -1,4 +1,4 @@
-# GoogleBilling 3.0.0.1-a01
+# GoogleBilling 3.0.2.1-a01
 
 #### 基于com.android.billingclient:billing:3.0.0，对整个支付流程进行封装。
 #### QQ群交流：425219113(计算机语言交流)
@@ -45,7 +45,7 @@ android {
     }
 }
 dependencies {
-    implementation 'com.TJHello:GoogleBilling:3.0.0.1-a01'
+    implementation 'com.TJHello:GoogleBilling:3.0.2.1-a01'
 }
 
 
