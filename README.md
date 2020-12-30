@@ -2,7 +2,10 @@
 
 #### 基于com.android.billingclient:billing:1.2.2，对整个支付流程进行封装。
 ##### QQ群交流：425219113(计算机语言交流)
-##### [最新版测试版3.0.0.1入口](https://github.com/TJHello/GoogleBilling/tree/3.0/)
+
+**提醒：从2021年8月2日开始，所有新应用都必须使用Billing Library版本3或更高版本。到2021年11月1日，对现有应用程序的所有更新都必须使用Billing Library版本3或更高版本。**
+
+##### [最新版测试版3.0.0.1入口](https://github.com/TJHello/GoogleBilling/tree/3.0/) (2021年8月2日开始强制使用)
 ##### [最新版测试版2.0.3.10入口](https://github.com/TJHello/GoogleBilling/tree/2.0/)
 ##### [测试版1.2.2.22入口](https://github.com/TJHello/GoogleBilling/tree/1.2.2/)
 
@@ -10,7 +13,6 @@
 
 **友情链接一款IOS内购封装【[DYFStoreKit](https://github.com/dgynfi/DYFStoreKit)】【[DYFStore](https://github.com/dgynfi/DYFStore)】**
 
-**提醒：从2021年8月2日开始，所有新应用都必须使用Billing Library版本3或更高版本。到2021年11月1日，对现有应用程序的所有更新都必须使用Billing Library版本3或更高版本。**
 
 **1.2.2.22改动**
 
