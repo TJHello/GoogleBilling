@@ -3,10 +3,13 @@
 #### 基于com.android.billingclient:billing:3.0.0，对整个支付流程进行封装。
 ##### QQ群交流：425219113(计算机语言交流)
 
-**自荐一款全平台广告聚合SDK自动集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/105416193](https://blog.csdn.net/u013640004/article/details/105416193)**
+**提醒：从2021年8月2日开始，所有新应用都必须使用Billing Library版本3或更高版本。到2021年11月1日，对现有应用程序的所有更新都必须使用Billing Library版本3或更高版本。**
 
 ##### [1.2.2.21入口](https://gitee.com/tjbaobao/GoogleBilling/tree/master/)
 ##### 3.0.0新特性[(官方说明)](https://developer.android.com/google/play/billing/release-notes)
+
+**自荐一款全平台广告聚合SDK自动集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/105416193](https://blog.csdn.net/u013640004/article/details/105416193)**
+
 
 - 删除了奖励的SKU支持。
 - 删除了ChildDirected和UnderAgeOfConsent参数。
@@ -17,8 +20,8 @@
 - 其他bug修复
 
 
-<img src="https://images.gitee.com/uploads/images/2019/0602/144013_b5f39e6b_927162.png"  width="216" height="384">
-<img src="https://images.gitee.com/uploads/images/2019/0602/144525_18b8420b_927162.png"  width="216" height="384">
+<img src="https://gitee.com/tjbaobao/GoogleBilling/raw/master/images/home.webp"  width="216" height="384">
+<img src="https://gitee.com/tjbaobao/GoogleBilling/raw/master/images/purchase.webp"  width="216" height="384">
 
 ---
 ### =================使用方法=================
