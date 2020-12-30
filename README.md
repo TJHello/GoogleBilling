@@ -5,6 +5,10 @@
 
 **自荐一款全平台广告聚合SDK自动集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/105416193](https://blog.csdn.net/u013640004/article/details/105416193)**
 
+```
+提醒：从2021年8月2日开始，所有新应用都必须使用Billing Library版本3或更高版本。到2021年11月1日，对现有应用程序的所有更新都必须使用Billing Library版本3或更高版本。了解更多。
+```
+
 ##### [1.2.2.21入口](https://gitee.com/tjbaobao/GoogleBilling/tree/master/)
 ##### 2.0.0新特性[(官方说明)](http://https://developer.android.com/google/play/billing/billing_library_releases_notes?hl=zh-cn)
 
@@ -15,8 +19,8 @@
 - 其他一些api修改，问题不大。不过一些开发者测试之类的功能应该很有用，但我没有具体去看。
 
 
-<img src="https://images.gitee.com/uploads/images/2019/0602/144013_b5f39e6b_927162.png"  width="216" height="384">
-<img src="https://images.gitee.com/uploads/images/2019/0602/144525_18b8420b_927162.png"  width="216" height="384">
+<img src="https://gitee.com/tjbaobao/GoogleBilling/raw/master/images/home.webp"  width="216" height="384">
+<img src="https://gitee.com/tjbaobao/GoogleBilling/raw/master/images/purchase.webp"  width="216" height="384">
 
 ---
 ### =================使用方法=================

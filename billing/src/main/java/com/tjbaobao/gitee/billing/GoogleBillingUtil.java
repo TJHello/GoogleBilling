@@ -285,6 +285,10 @@ public class GoogleBillingUtil {
         }
     }
 
+    void upgradeSubs(Activity activity,final String skuId,final String oldSkuId){
+
+    }
+
 
     //endregion
 
@@ -648,6 +652,10 @@ public class GoogleBillingUtil {
         }
     }
 
+    @Nullable
+    public BillingClient getBillingClient(){
+        return mBillingClient;
+    }
 
     /**
      * google内购服务是否已经准备好
