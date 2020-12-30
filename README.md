@@ -1,15 +1,15 @@
 # GoogleBilling 3.0.0.1-a01
 
 #### 基于com.android.billingclient:billing:3.0.0，对整个支付流程进行封装。
-##### QQ群交流：425219113(计算机语言交流)
+#### QQ群交流：425219113(计算机语言交流)
 
 **提醒：从2021年8月2日开始，所有新应用都必须使用Billing Library版本3或更高版本。到2021年11月1日，对现有应用程序的所有更新都必须使用Billing Library版本3或更高版本。**
 
-##### [1.2.2.21入口](2021年8月2日弃用)(https://gitee.com/tjbaobao/GoogleBilling/tree/master/)
+##### [1.2.2.21入口(2021年8月2日弃用)](https://gitee.com/tjbaobao/GoogleBilling/tree/master/)
 
 **自荐一款全平台广告聚合SDK自动集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/105416193](https://blog.csdn.net/u013640004/article/details/105416193)**
 
-##### 3.0.0新特性[(官方说明)](https://developer.android.com/google/play/billing/release-notes)
+#### 3.0.0新特性[(官方说明)](https://developer.android.com/google/play/billing/release-notes)
 
 - 删除了奖励的SKU支持。
 - 删除了ChildDirected和UnderAgeOfConsent参数。
