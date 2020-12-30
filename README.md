@@ -10,6 +10,8 @@
 
 **友情链接一款IOS内购封装【[DYFStoreKit](https://github.com/dgynfi/DYFStoreKit)】【[DYFStore](https://github.com/dgynfi/DYFStore)】**
 
+**提醒：从2021年8月2日开始，所有新应用都必须使用Billing Library版本3或更高版本。到2021年11月1日，对现有应用程序的所有更新都必须使用Billing Library版本3或更高版本。**
+
 **1.2.2.22改动**
 
 - 重写自动消耗逻辑，改为每次购买成功，或者查询到未处理订单时，由使用者决定是否自动消耗。
@@ -17,8 +19,8 @@
 - 用内购id来发起订阅，或者用订阅id来发起内购时，会抛出异常提醒使用者。
 
 
-<img src="https://images.gitee.com/uploads/images/2019/0602/144013_b5f39e6b_927162.png"  width="216" height="384">
-<img src="https://images.gitee.com/uploads/images/2019/0602/144525_18b8420b_927162.png"  width="216" height="384">
+<img src="https://gitee.com/tjbaobao/GoogleBilling/raw/master/images/home.webp"  width="216" height="384">
+<img src="https://gitee.com/tjbaobao/GoogleBilling/raw/master/images/purchase.webp"  width="216" height="384">
 
 ---
 ### =================使用方法=================
