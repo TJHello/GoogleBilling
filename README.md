@@ -52,7 +52,7 @@ dependencies {
 ```
 
 
-- 代码示例 [MainActivity](https://gitee.com/tjbaobao/GoogleBilling/blob/master/app/src/main/java/com/tjbaobao/gitee/googlebillingutil/MainActivity.kt)
+- 代码示例-建议直接下载Demo来看
 
 ```kotlin
     private lateinit var googleBillingUtil: GoogleBillingUtil
