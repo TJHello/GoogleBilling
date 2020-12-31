@@ -7,12 +7,7 @@
 
 ##### [最新版测试版3.0.0.1入口](https://github.com/TJHello/GoogleBilling/tree/3.0/) (2021年8月2日开始强制使用)
 ##### [最新版测试版2.0.3.10入口](https://github.com/TJHello/GoogleBilling/tree/2.0/)
-##### [测试版1.2.2.22入口](https://github.com/TJHello/GoogleBilling/tree/1.2.2/)
-
-**自荐一款全平台广告聚合SDK自动集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/105416193](https://blog.csdn.net/u013640004/article/details/105416193)**
-
-**友情链接一款IOS内购封装【[DYFStoreKit](https://github.com/dgynfi/DYFStoreKit)】【[DYFStore](https://github.com/dgynfi/DYFStore)】**
-
+##### [测试版1.2.2.22入口](https://github.com/TJHello/GoogleBilling/tree/1.2.2-v2/)
 
 **1.2.2.22改动**
 
@@ -20,9 +15,11 @@
 - 增加onRecheck接口，返回未处理的有效订单
 - 用内购id来发起订阅，或者用订阅id来发起内购时，会抛出异常提醒使用者。
 
+**自荐一款全平台广告聚合SDK自动集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/105416193](https://blog.csdn.net/u013640004/article/details/105416193)**
 
-<img src="https://gitee.com/tjbaobao/GoogleBilling/raw/master/images/home.webp"  width="216" height="384">
-<img src="https://gitee.com/tjbaobao/GoogleBilling/raw/master/images/purchase.webp"  width="216" height="384">
+**友情链接一款IOS内购封装【[DYFStoreKit](https://github.com/dgynfi/DYFStoreKit)】【[DYFStore](https://github.com/dgynfi/DYFStore)】**
+
+<img src="https://gitee.com/tjbaobao/GoogleBilling/raw/master/images/home.webp"  width="216" height="384"><img src="https://gitee.com/tjbaobao/GoogleBilling/raw/master/images/purchase.webp"  width="216" height="384">
 
 ---
 ### =================使用方法=================
