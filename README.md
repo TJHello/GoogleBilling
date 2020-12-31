@@ -1,8 +1,9 @@
-# GoogleBilling 1.2.2.21 [![](https://jitpack.io/v/TJHello/GoogleBilling.svg)](https://jitpack.io/#TJHello/GoogleBilling/1.2.2)
+# GoogleBilling 1.2.2.22
 
-#### 基于com.android.billingclient:billing:1.2，对整个支付流程进行封装。
+#### 基于com.android.billingclient:billing:1.2.2，对整个支付流程进行封装。
 ##### QQ群交流：425219113(计算机语言交流)
-##### [最新版2.0.0入口](https://github.com/TJHello/GoogleBilling/tree/2.0)
+##### [最新版测试版3.0.0入口](https://github.com/TJHello/GoogleBilling/tree/3.0)
+##### [最新版测试版2.0.0入口](https://github.com/TJHello/GoogleBilling/tree/2.0)
 
 **自荐一款全平台广告聚合SDK自动集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/105416193](https://blog.csdn.net/u013640004/article/details/105416193)**
 
@@ -13,8 +14,7 @@
 - 用内购id来发起订阅，或者用订阅id来发起内购时，会抛出异常提醒使用者。
 
 
-<img src="https://images.gitee.com/uploads/images/2019/0602/144013_b5f39e6b_927162.png"  width="216" height="384">
-<img src="https://images.gitee.com/uploads/images/2019/0602/144525_18b8420b_927162.png"  width="216" height="384">
+<img src="https://images.gitee.com/uploads/images/2019/0602/144013_b5f39e6b_927162.png"  width="216" height="384"><img src="https://images.gitee.com/uploads/images/2019/0602/144525_18b8420b_927162.png"  width="216" height="384">
 
 ---
 ### =================使用方法=================
