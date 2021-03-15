@@ -41,5 +41,10 @@
       <option name="name" value="E:\Android\SDK\extras\android\m2repository" />
       <option name="url" value="file:/E:/Android/SDK/extras/android/m2repository" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="MavenRepo" />
+      <option name="name" value="MavenRepo" />
+      <option name="url" value="https://repo.maven.apache.org/maven2/" />
+    </remote-repository>
   </component>
 </project>

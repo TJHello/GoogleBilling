@@ -65,7 +65,7 @@ public class OnGoogleBillingListener {
      *
      * @return 是否自动消耗，只有当isSelf为true,并且支付状态为{@link com.android.billingclient.api.Purchase.PurchaseState.PURCHASED}时，该值才会生效。
      */
-    public boolean onRecheck(@NonNull String skuType, @NonNull Purchase purchase, boolean isSelf) {
+    public boolean onRecheck(@NonNull String skuType, @NonNull Purchase purchase,boolean isEnd,boolean isSelf) {
         return false;
     }
 
