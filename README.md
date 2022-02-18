@@ -4,10 +4,9 @@
 ##### QQ群交流：425219113(计算机语言交流)
 
 **提醒：从2021年8月2日开始，所有新应用都必须使用Billing Library版本3或更高版本。到2021年11月1日，对现有应用程序的所有更新都必须使用Billing Library版本3或更高版本。**
-##### 【BillingEasy-0.1.1】[全新设计的内购聚合，同时支持华为内购与谷歌内购](https://gitee.com/TJHello/BillingEasy)
-##### [最新版3.0.0.1入口](https://github.com/TJHello/GoogleBilling/tree/3.0/) (2021年8月2日开始强制使用)
-##### [测试版2.0.3.10入口](https://github.com/TJHello/GoogleBilling/tree/2.0/)
-##### [测试版1.2.2.22入口](https://github.com/TJHello/GoogleBilling/tree/1.2.2-v2/)
+
+### 如今仅维护BillingEasy版本，请前往使用。
+### 【BillingEasy-0.1.2】[全新设计的内购聚合，同时支持华为内购与谷歌内购](https://gitee.com/TJHello/BillingEasy)
 
 **1.2.2.22改动**
 
@@ -41,7 +40,7 @@ android {
     }
 }
 dependencies {
-     implementation 'com.TJHello:GoogleBilling:1.2.2.13'
+     implementation 'com.TJHello:GoogleBilling:3.0.0.1-a06'
 }
 
 
