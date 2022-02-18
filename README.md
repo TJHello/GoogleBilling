@@ -6,11 +6,11 @@
 **提醒：从2021年8月2日开始，所有新应用都必须使用Billing Library版本3或更高版本。到2021年11月1日，对现有应用程序的所有更新都必须使用Billing Library版本3或更高版本。**
 
 ### 如今仅维护BillingEasy版本，请前往使用。
-**【BillingEasy-0.1.2】[全新设计的内购聚合，同时支持华为内购与谷歌内购](https://gitee.com/TJHello/BillingEasy)**
+**【[BillingEasy-0.1.2](https://gitee.com/TJHello/BillingEasy)】全新设计的内购聚合，同时支持华为内购与谷歌内购**
 
-**自荐一款全平台广告聚合SDK自动集成框架【ADEasy】:[https://blog.csdn.net/u013640004/article/details/105416193](https://blog.csdn.net/u013640004/article/details/105416193)**
+**【[ADEasy](https://blog.csdn.net/u013640004/article/details/105416193)】自荐一款全平台广告聚合SDK自动集成框架**
 
-**友情链接一款IOS内购封装【[DYFStoreKit](https://github.com/dgynfi/DYFStoreKit)】【[DYFStore](https://github.com/dgynfi/DYFStore)】**
+**【[DYFStoreKit](https://github.com/dgynfi/DYFStoreKit)】【[DYFStore](https://github.com/dgynfi/DYFStore)】友情链接一款IOS内购封装**
 
 <img src="https://gitee.com/tjbaobao/GoogleBilling/raw/master/images/home.webp"  width="216" height="384"><img src="https://gitee.com/tjbaobao/GoogleBilling/raw/master/images/purchase.webp"  width="216" height="384">
 
