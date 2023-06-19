@@ -60,13 +60,13 @@ tasks.withType(Javadoc) {
     options.addStringOption('charSet', 'UTF-8')
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: uri("C:\\Android\\unityWorkSpace\\ADEasyLib\\repo"))
-            pom.groupId = GROUP_ID
-            pom.artifactId = POM_ARTIFACT_ID
-            pom.version = ver
-        }
-    }
-}
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+//            repository(url: uri("C:\\Android\\unityWorkSpace\\ADEasyLib\\repo"))
+//            pom.groupId = GROUP_ID
+//            pom.artifactId = POM_ARTIFACT_ID
+//            pom.version = ver
+//        }
+//    }
+//}
